@@ -84,15 +84,15 @@ The floating-point suffix must be the name of one of the floating-point types: `
 | Name | Syntax | Examples
 | ---- | ---- | ---- |
 | `nop` | `nop`
-| `block` | `{` … [*break-label* `:`] `}` | `{}`, `{ br $a nop $a:}`
-| `loop` | `loop` [*continue-label*] `{` …  [*break-label* `:`] `}` | `loop $a { br $a }`
-| `if` | `if` *expr* `{` *expr** `}` | `if 0 { 1 }`
-| `if_else` | `if` *expr* `{` *expr** `} else {` *expr**`}` | `if 0 { 1 } else { 2 }`
+| `block` | `{` … [ *break-label* `:` ] `}` | `{}`, `{ br $a nop $a:}`
+| `loop` | `loop` [ *continue-label* ] `{` …  [ *break-label* `:` ] `}` | `loop $a { br $a }`
+| `if` | `if` `(` *expr* `)` `{` *expr* * `}` | `if 0 { 1 }`
+| `if_else` | `if` `(` *expr* `)` `{` *expr* * `}` `else` `{` *expr* *`}` | `if 0 { 1 } else { 2 }`
 | `select` | `select` *expr* `,` *expr* `?` *expr* | `select 1, 2 ? $x < $y`
 | `br` | `br` [*expr*] *label*| `br $a`
-| `br_if` | `br_if` *expr ',' [*expr* ','] *label* | `br_if $x < $y, 1, $a`
-| `br_table` | `br_table` *expr* ',' [*expr* ','] `[` *case-label* `,` … `]` `,` *default-label*  | `br_table 1, [$x, $y], $z`
-| `return` | `return` [*expr*] | `return`
+| `br_if` | `br_if` *expr ',' [ *expr* ',' ] *label* | `br_if $x < $y, 1, $a`
+| `br_table` | `br_table` *expr* ',' [ *expr* ',' ] `[` *case-label* `,` … `]` `,` *default-label*  | `br_table 1, [$x, $y], $z`
+| `return` | `return` [ *expr* ] | `return`
 | `unreachable` | `unreachable` | `unreachable`
 
 ## Basic operators ([described here](https://github.com/WebAssembly/design/blob/master/AstSemantics.md#constants))
