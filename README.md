@@ -84,19 +84,15 @@ The floating-point suffix must be the name of one of the floating-point types: `
 | Name | Syntax | Examples
 | ---- | ---- | ---- |
 | `nop` | `nop`
-| `block` | `{` … `}` [`:` *break-label*] | `{}`, `{ br $a } : $a`
-| `loop` | [*continue-label* `:`] `do {` … `}` | `$a : do { br $a }`
+| `block` | `{` … [*break-label* `:`] `}` | `{}`, `{ br $a nop $a:}`
+| `loop` | `loop` [*continue-label*] `{` …  [*break-label* `:`] `}` | `loop $a { br $a }`
 | `if` | `if` *expr* `{` *expr** `}` | `if 0 { 1 }`
 | `if_else` | `if` *expr* `{` *expr** `} else {` *expr**`}` | `if 0 { 1 } else { 2 }`
-| `select` | `select` *expr*, *expr*, *expr* | `select 1, 2, $x < $y`
-| `br` | `br` *label*| `br $a`
-| `br` | `break` [*label*] | `break`, `break $a`
-| `br` | `continue` [*label*] | `continue`, `continue $a`
-| `br_if` | `br` *label* `?` *expr* | `br $a`, `br $a ? $x < $y`
-| `br_if` | `break` [`?` *expr*] | `break`<br>`break ? $x < $y`
-| `br_if` | `continue` [`?` *expr*] | `continue`<br>`continue ? $x < $y`
-| `br_table` | `br_table` `[` *case-label* `,` … `]` `,` *default-label* `,` *expr* | `br_table [$x, $y], $z, 0`
-| `return` | `return` | `return`
+| `select` | `select` *expr* `,` *expr* `?` *expr* | `select 1, 2 ? $x < $y`
+| `br` | `br` [*expr*] *label*| `br $a`
+| `br_if` | `br_if` *expr ',' [*expr* ','] *label* | `br_if $x < $y, 1, $a`
+| `br_table` | `br_table` *expr* ',' [*expr* ','] `[` *case-label* `,` … `]` `,` *default-label*  | `br_table 1, [$x, $y], $z`
+| `return` | `return` [*expr*] | `return`
 | `unreachable` | `unreachable` | `unreachable`
 
 ## Basic operators ([described here](https://github.com/WebAssembly/design/blob/master/AstSemantics.md#constants))
@@ -105,24 +101,20 @@ The floating-point suffix must be the name of one of the floating-point types: `
 | ---- | ---- | ---- |
 | `i32.const` | …`i32`<sub>opt</sub> | `123`, `123i32`, `0b101`
 | `i64.const` | …`i64` | `456i64`
-| `f64.const` | …`f32`<sub>opt</sub> | `0.1f32`
-| `f32.const` | …`f64` | `0.2f64`
+| `f64.const` | …`f32` or …`f` | `0.1f`
+| `f32.const` | …`f64`<sub>opt</sub> | `0.2f64`
 | `get_local` | *name* | `$x`
 | `set_local` | *name* `=` *expr* | `$x = $x + 1`
-| `push` | `push` *expr* | `push $x + 1`
-| `pop` | `pop` | `pop`
-| `load_global` | 
-| `store_global` | 
 | `call` | `call` *name* `(`*expr* `,` … `)` | `call $min(0, 2)`
 | `call_import` | `call_import` *name* `(`*expr* `,` … `)` | `call_import $max(0, 2)`
-| `call_indirect` | `call_indirect` *signature-name* `[` *expr* `]` `(`*expr* `,` … `)` | `call_indirect $foo [1] $min(0, 2)`
+| `call_indirect` | `call_indirect` *signature-name* `[` *expr* `]` `(`*expr* `,` … `)` | `call_indirect $type$1 [$i] $min(0, 2)`
 
 ## Memory-related operators ([described here](https://github.com/WebAssembly/design/blob/master/AstSemantics.md#linear-memory-accesses))
 
 | Name | Syntax | Example
 | ---- | ---- | ---- |
-| *memory-immediate* | `[` *base-expression* `,` *offset* `]` | `[1 + 2, 4]`
-| `i32.load8_s` | `i32.load8_s` *memory-immediate* | `i32.load8_s [0, 4]` 
+| *memory-immediate* | `[` *base-expression* `,` *offset* `]` | `[1 + 2, +4]`
+| `i32.load8_s` | `i32.load8_s` *memory-immediate* | `i32.load8_s [0, +4]` 
 | `i32.load8_u` | … | … 
 | `i32.load16_s` | … | … 
 | `i32.load16_u` | … | … 
@@ -136,7 +128,7 @@ The floating-point suffix must be the name of one of the floating-point types: `
 | `i64.load` | … | … 
 | `f32.load` | … | … 
 | `f64.load` | … | … 
-| `i32.store8` | `i32.store8` *memory-immediate* *expr* | `i32.store8 [0, 4] 1 + 2` 
+| `i32.store8` | `i32.store8` *memory-immediate* `,` *expr* | `i32.store8 [0, +4], 1 + 2` 
 | `i32.store16` | … | … 
 | `i64.store8` | … | … 
 | `i64.store16` | … | … 
