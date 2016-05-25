@@ -1,0 +1,16 @@
+function $foo() : () {
+	i32.load8_s [0, +0]
+	i32.load8_u [0, +0]
+	i32.load16_s [0, +0]
+	i32.load16_u [0, +0]
+	i64.load8_s	[0, +0]
+	i64.load8_u	[0, +0]
+	i64.load16_s [0, +0]
+	i64.load16_u [0, +0]
+	i64.load32_s [0, +0]
+	i64.load32_u [0, +0]
+	i32.load [0, +0]
+	i64.load [0, +0]
+	f32.load [0, +0]
+	f64.load [0, +0]
+}

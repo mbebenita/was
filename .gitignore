@@ -1,0 +1,11 @@
+*.swp
+*.o
+location.hh
+position.hh
+stack.hh
+was_lexer.yy.cc
+was_parser.output
+was_parser.tab.cc
+was_parser.tab.hh
+was_wc
+was

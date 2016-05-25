@@ -1,0 +1,6 @@
+function $foo() : () {
+  { br $b $b: }
+  loop $a { br $a }
+  loop $a { if (1) { br $a } else { br $b } $b:}
+  loop $a { loop $b { br $a $c:} $d:}
+}

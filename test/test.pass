@@ -1,0 +1,3 @@
+function $foo() : () {
+	br 5, $foo
+}

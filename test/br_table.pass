@@ -1,0 +1,17 @@
+function $foo() : () {
+  {
+	{
+	    {
+			br_table 0,[$c, $b, $c], $x
+			$c:	
+  		}
+  		$x:
+  	}
+  	$b:
+  }
+
+
+  {br_table 1,5,[$c, $b, $c],$x $c: $x: $b:}
+  
+  loop $0 { loop $1 { loop $2 {br_table 2,[$c, $b, $c], $x $c: $x: br $a $b:} $a:} }
+}

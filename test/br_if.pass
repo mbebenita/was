@@ -1,0 +1,7 @@
+function $foo() : () {
+  loop $foo { br $foo }
+  loop $foo { br_if 1 < 2,$foo }
+  loop { br $foo $foo:}
+  loop { br_if 1 < 2,$foo $foo:}
+  loop $foo { br_if 1 < 2,$foo br_if 2 < 3,$bar $bar: }
+}

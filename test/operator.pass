@@ -1,0 +1,23 @@
+function $foo() : () { 1 - 2 }
+function $foo() : () { 1 + 2 * 3 }
+
+function $foo() : () { 1 * 2 }
+function $foo() : () { 1 / 2 }
+function $foo() : () { 1 /s 2 }
+function $foo() : () { 1 /u 2 }
+function $foo() : () { 1 %s 2 }
+function $foo() : () { 1 %u 2 }
+
+function $foo() : () { 1 * 2 }
+function $foo() : () { 1 / 2 }
+function $foo() : () { 1 /s 2 }
+function $foo() : () { 1 /u 2 }
+function $foo() : () { 1 %s 2 }
+function $foo() : () { 1 %u 2 }
+
+function $foo() : () { (1 + 2) }
+function $foo() : () { ((1 - 2) + 1) }
+
+function $foo() : () { 1 + 2 <s 3 >s 4 <u 5 >u 6 & 7 | 8 ^ 9 }
+function $foo() : () { 1 == 1 != 2 <s 3 <u 4 >=s 5 >=u 6 >s 7 >u 8 <=s 9 <=u 10}
+function $foo() : () { 11 <= 12 >= 13 }
