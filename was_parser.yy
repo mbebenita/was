@@ -479,7 +479,7 @@ select_expression
 
 store_expression
    : bitwise_or_expression
-   | type '.' store_operator address ',' bitwise_or_expression
+   | type '.' store_operator address ',' store_expression
    ;
    
 assignment_expression

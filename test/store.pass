@@ -8,4 +8,5 @@ function $foo() : () {
 	i64.store	[0, +0], 0
 	f32.store	[0, +0], 0
 	f64.store [0, +0], 0
+	f64.store [0, +0], f64.store [0, +0], 0
 }
