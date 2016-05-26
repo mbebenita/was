@@ -61,6 +61,7 @@ IDENTIFIER      \${ATOM}
 %%
 %{          // Code executed at the beginning of yylex
             yylval = lval;
+            loc = location;
 %}
 
 "function"                     { return token::FUNCTION; }
@@ -195,13 +196,14 @@ IDENTIFIER      \${ATOM}
 
 "/*"                  { BEGIN(COMMENT); }
 <COMMENT>"*/"         { BEGIN(INITIAL); }
-<COMMENT>([^*]|\n)+|. { }
+<COMMENT>\n           { loc->lines(); }
+<COMMENT>[^*\n]+|.    { }
 <COMMENT><<EOF>>      { printf("Unterminated comment\n"); return 0; }
 "//".*                { }
 
 
-[ \t\v\n\r\f] { }
-
+[ \t]                 { loc->step(); }
+(\n\r?)|[\r\f\v]      { loc->lines(); }
 %%
 
 
