@@ -1,5 +1,5 @@
 function $foo() : () {
-	br_if 5 < 1, $foo
+	br_if (5 < 1) $foo
 	return
 	if (return) { }
 	if (return) { } else { }

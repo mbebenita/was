@@ -11,7 +11,7 @@ function $func$0() : (i32) {
   loop $label$0 {
     i32.store [$var$5,+3088],i32.store [$var$5,+2064],i32.load [$var$5,+1040]
     $var$5 = $var$5 + 4
-    br_if $var$5,$label$0
+    br_if ($var$5) $label$0
   }
   $var$15 = -11352.57
   $var$17 = 0.0
@@ -19,7 +19,7 @@ function $func$0() : (i32) {
     $var$18 = -346.1235
     loop $label$11 {
       {
-        br_if $var$18 >= 23.2345 | $var$18 != $var$18,$label$1
+        br_if ($var$18 >= 23.2345 | $var$18 != $var$18) $label$1
         $var$0 = $var$15 - ($var$22 = f64.floor($var$15))
         $var$2 = i32.load [$var$5 = i32.trunc_s/f64($var$22 & 255 << 2),+1040]
         $var$3 = i32.load [$var$5,+1044]
@@ -32,7 +32,7 @@ function $func$0() : (i32) {
           $var$16 = select($var$0, $var$22 = $var$18 - $var$22, ($var$19 = ($var$20 = i32.load [$var$21 = i32.load [$var$20,+1040] << 2,+1436]) & 15) <u 8)
           $var$24 = $var$22
           {
-            br_if $var$19 <u 4,$label$2
+            br_if ($var$19 <u 4) $label$2
             $var$24 = select($var$0,0.7649999999999864, $var$19 | 2 == 14)
           $label$2:
           }
@@ -42,7 +42,7 @@ function $func$0() : (i32) {
           $var$10 = $var$22 * 6.0
           $var$24 = $var$22
           {
-            br_if $var$19 <u 4,$label$3
+            br_if ($var$19 <u 4) $label$3
             $var$24 = select($var$4,0.7649999999999864, $var$19 | 2 == 14)
           $label$3:
           }
@@ -52,7 +52,7 @@ function $func$0() : (i32) {
           $var$10 = select($var$0,($var$24 = $var$22 + -1.0), ($var$19 = ($var$20 = i32.load [$var$6 << 2,+1040]) & 15) <u 8)
           $var$16 = $var$24
           {
-            br_if $var$19 <u 4,$label$4
+            br_if ($var$19 <u 4) $label$4
             $var$16 = select($var$0,0.7649999999999864, $var$19 | 2 == 14)
           $label$4:
           }
@@ -63,7 +63,7 @@ function $func$0() : (i32) {
           $var$12 = $var$22 * $var$22
           $var$16 = $var$24
           {
-            br_if $var$19 <u 4,$label$5
+            br_if ($var$19 <u 4) $label$5
             $var$16 = select($var$4,0.7649999999999864, $var$19 | 2 == 14)
           $label$5:
           }
@@ -74,7 +74,7 @@ function $func$0() : (i32) {
           $var$10 = select($var$0,$var$22, ($var$19 = ($var$20 = i32.load [$var$21,+1440]) & 15) <u 8)
           $var$16 = $var$22
           {
-            br_if $var$19 <u 4,$label$6
+            br_if ($var$19 <u 4) $label$6
             $var$16 = select($var$0,-0.23500000000001364, $var$19 | 2 == 14)
           $label$6:
           }
@@ -83,7 +83,7 @@ function $func$0() : (i32) {
           $var$14 = $var$14 - $var$9
           $var$10 = select($var$4,$var$22, ($var$19 = ($var$20 = i32.load [$var$23 << 2,+1440]) & 15) <u 8)
           {
-            br_if $var$19 <u 4,$label$7
+            br_if ($var$19 <u 4) $label$7
             $var$22 = select($var$4,-0.23500000000001364, $var$19 | 2 == 14)
           $label$7:
           }
@@ -92,7 +92,7 @@ function $func$0() : (i32) {
           $var$10 = select($var$0,$var$24, ($var$20 = ($var$5 = i32.load [$var$5 << 2,+1440]) & 15) <u 8)
           $var$22 = $var$24
           {
-            br_if $var$20 <u 4,$label$8
+            br_if ($var$20 <u 4) $label$8
             $var$22 = select($var$0,-0.23500000000001364, $var$20 | 2 == 14)
           $label$8:
           }
@@ -101,21 +101,21 @@ function $func$0() : (i32) {
           $var$22 = select(-$var$10,$var$10, $var$5 & 1) + select(-$var$22,$var$22, $var$5 & 2)
           $var$10 = select($var$4,$var$24, ($var$8 = ($var$5 = i32.load [$var$8 << 2,+1440]) & 15) <u 8)
           {
-            br_if $var$8 <u 4,$label$9
+            br_if ($var$8 <u 4) $label$9
             $var$24 = select($var$4,-0.23500000000001364, $var$8 | 2 == 14)
           $label$9:
           }
           $var$17 = $var$17 + ($var$9 + (($var$16 + ($var$11 * ($var$22 + ($var$1 * (select(-$var$10,$var$10, $var$5 & 1) + select(-$var$24,$var$24, $var$5 & 2) - $var$22)) - $var$16)) - $var$9) * 0.9116680404937368))
           $var$18 = $var$18 + 2.45
-          br_if $var$18 < 23.2345,$label$10
+          br_if ($var$18 < 23.2345) $label$10
         }
       $label$1:
       }
       $var$18 = $var$18 + 1.4325
-      br_if $var$18 < 124.124,$label$11
+      br_if ($var$18 < 124.124) $label$11
     }
     $var$15 = $var$15 + 0.1235
-    br_if $var$15 < 23561.57,$label$12
+    br_if ($var$15 < 23561.57) $label$12
   }
   call_import $import$0 ($var$17)
   0

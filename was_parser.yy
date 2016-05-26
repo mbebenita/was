@@ -524,14 +524,14 @@ if_expression
 
 br_expression
    : BR IDENTIFIER
-   | BR expression ',' IDENTIFIER
-   | BR_IF expression ',' IDENTIFIER
-   | BR_IF expression ',' expression ',' IDENTIFIER
+   | BR '(' expression ')' IDENTIFIER
+   | BR_IF '(' expression ')' IDENTIFIER
+   | BR_IF '(' expression ',' expression ')' IDENTIFIER
    ; 
 
 br_table_expression
-   : BR_TABLE expression ',' '[' identifier_list ']' ',' IDENTIFIER
-   | BR_TABLE expression ',' expression ',' '[' identifier_list ']' ',' IDENTIFIER
+   : BR_TABLE '(' expression ')' '[' identifier_list ']' IDENTIFIER
+   | BR_TABLE '(' expression ',' expression ')' '[' identifier_list ']' IDENTIFIER
    ;
 
 type

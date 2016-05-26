@@ -89,9 +89,9 @@ The floating-point suffix must be the name of one of the floating-point types: `
 | `if` | `if` `(` *expr* `)` `{` *expr* * `}` | `if 0 { 1 }`
 | `if_else` | `if` `(` *expr* `)` `{` *expr* * `}` `else` `{` *expr* *`}` | `if 0 { 1 } else { 2 }`
 | `select` | `select` *expr* `,` *expr* `?` *expr* | `select 1, 2 ? $x < $y`
-| `br` | `br` [*expr*] *label*| `br $a`
-| `br_if` | `br_if` *expr ',' [ *expr* ',' ] *label* | `br_if $x < $y, 1, $a`
-| `br_table` | `br_table` *expr* ',' [ *expr* ',' ] `[` *case-label* `,` … `]` `,` *default-label*  | `br_table 1, [$x, $y], $z`
+| `br` | `br` [ `(` *expr* `)` ] *label* | `br $a`
+| `br_if` | `br_if` `(` *expr [ ',' *expr* ] `)` *label* | `br_if $x < $y, 1, $a`
+| `br_table` | `br_table` `(` *expr* [ ',' *expr* ] `)` `[` *case-label* `,` … `]` *default-label*  | `br_table 1, [$x, $y], $z`
 | `return` | `return` [ *expr* ] | `return`
 | `unreachable` | `unreachable` | `unreachable`
 
