@@ -88,20 +88,20 @@ IDENTIFIER      \${ATOM}
 
 "var"                          { return token::VAR; }
 
-"load"                         { return token::LOAD; }
-"load8_s"                      { return token::LOAD_S_8; }
-"load8_u"                      { return token::LOAD_U_8; }
+("i32"|"i64")":8s"             { return token::LOAD_S_8; }
+("i32"|"i64")":8u"             { return token::LOAD_U_8; }
 
-"load16_s"                     { return token::LOAD_S_16; }
-"load16_u"                     { return token::LOAD_U_16; }
+("i32"|"i64")":16s"            { return token::LOAD_S_16; }
+("i32"|"i64")":16u"            { return token::LOAD_U_16; }
 
-"load32_s"                     { return token::LOAD_S_32; }
-"load32_u"                     { return token::LOAD_U_32; }
+"i64:32s"                      { return token::LOAD_S_32; }
+"i64:32u"                      { return token::LOAD_U_32; }
 
-"store"                        { return token::STORE; }
-"store8"                       { return token::STORE_8; }
-"store16"                      { return token::STORE_16; }
-"store32"                      { return token::STORE_32; }
+("i32"|"i64")":8"              { return token::STORE_8; }
+("i32"|"i64")":16"             { return token::STORE_16; }
+"i64:32"                       { return token::STORE_32; }
+
+"align"                        { return token::ALIGN; }
 
 "select"                       { return token::SELECT; }
 "return"                       { return token::RETURN; }

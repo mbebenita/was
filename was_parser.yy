@@ -59,8 +59,6 @@
 %token               NEWLINE
 %token               CHAR
 
-%token LOAD
-
 %token LOAD_S_8
 %token LOAD_U_8
 
@@ -70,10 +68,11 @@
 %token LOAD_S_32
 %token LOAD_U_32
 
-%token STORE
 %token STORE_8
 %token STORE_16
 %token STORE_32
+
+%token ALIGN
 
 %token SELECT
 %token RETURN
@@ -323,29 +322,35 @@ group_expression
    | block_expression
    ;
 
-address
-   : '[' expression ',' INT ']'
+align
+   : ALIGN '=' INT
    ;
 
-load_operator
-   : LOAD
+address
+   : '[' expression ']'
+   | '[' expression ',' align ']'
+   | '[' expression ',' INT ']'
+   | '[' expression ',' INT ',' align ']'
+   ;
+
+memory_operator
+   : I32
+   | I64
+   | F32
+   | F64
    | LOAD_S_8
    | LOAD_U_8
    | LOAD_S_16
    | LOAD_U_16
    | LOAD_S_32
    | LOAD_U_32
-   ;
-
-store_operator
-   : STORE
    | STORE_8
    | STORE_16
    | STORE_32
    ;
 
 load_expression
-   : type '.' load_operator address
+   : memory_operator address
    ;
 
 typed_unary_operator
@@ -476,15 +481,11 @@ bitwise_or_expression
 select_operator_expression
    : SELECT '(' expression ',' expression ',' expression ')' { trace("select_expression"); }
    ;
-
-store_expression
-   : bitwise_or_expression
-   | type '.' store_operator address ',' store_expression
-   ;
    
 assignment_expression
-   : store_expression
+   : bitwise_or_expression
    | IDENTIFIER '=' assignment_expression { trace("assignment_expression"); }
+   | memory_operator address '=' assignment_expression { trace("store_expression"); }
    ;
 
 operator_expression
