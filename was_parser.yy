@@ -319,6 +319,7 @@ group_expression
    | '(' assignment_expression ')'
    | call_expression
    | load_expression
+   | precedence_expression
    | block_expression
    ;
 
@@ -377,24 +378,23 @@ typed_unary_operator
    | REINTERPRET_I32
    | REINTERPRET_I64
    ;
-   
+
 prefix_expression
    : group_expression
    | '-' prefix_expression
-   | '+' prefix_expression
-   | '!' prefix_expression
-   | type '.' typed_unary_operator prefix_expression
+   ;
+
+prefix_precedence_expression
+   : type '.' typed_unary_operator prefix_expression
    ;
 
 copysign_expression
-   : prefix_expression
-   | type '.' COPYSIGN prefix_expression ',' copysign_expression { trace("copysign_expression"); }
+   : type '.' COPYSIGN expression ',' prefix_expression { trace("copysign_expression"); }
    ;
 
 minmax_expression
-   : copysign_expression
-   | type '.' MIN copysign_expression ',' minmax_expression { trace("minmax_expression"); }
-   | type '.' MAX copysign_expression ',' minmax_expression { trace("minmax_expression"); }
+   : type '.' MIN expression ',' prefix_expression { trace("minmax_expression"); }
+   | type '.' MAX expression ',' prefix_expression { trace("minmax_expression"); }
    ;
 
 multiplicative_operator
@@ -407,8 +407,8 @@ multiplicative_operator
    ;
 
 multiplicative_expression
-   : minmax_expression
-   | multiplicative_expression multiplicative_operator minmax_expression { trace("multiplicative_expression"); }
+   : prefix_expression
+   | multiplicative_expression multiplicative_operator prefix_expression { trace("multiplicative_expression"); }
    ;
 
 additive_operator
@@ -474,7 +474,7 @@ bitwise_or_expression
    ;
 
 select_expression
-   : SELECT expression ',' expression '?' expression { trace("select_expression"); }
+   : SELECT expression ',' expression '?' bitwise_or_expression { trace("select_expression"); }
    ;
 
 store_expression
@@ -487,20 +487,25 @@ assignment_expression
    | IDENTIFIER '=' assignment_expression { trace("assignment_expression"); }
    ;
 
+precedence_expression
+   : prefix_precedence_expression
+   | copysign_expression
+   | minmax_expression
+   | select_expression
+   ;
+
 block_expression
    : if_expression
    | br_expression
    | br_table_expression
    | return_expression
    | block
-   | select_expression
    ;
 
 expression   
    : assignment_expression
-   | block_expression
    ;
-   
+
 call_expression
    : CALL IDENTIFIER '(' optional_expression_list ')' { trace("call_expression"); }
    | CALL_IMPORT IDENTIFIER '(' optional_expression_list ')' { trace("call_expression"); }

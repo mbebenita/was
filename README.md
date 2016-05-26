@@ -267,6 +267,26 @@ The floating-point suffix must be the name of one of the floating-point types: `
 | `i32.reinterpret/f32` | …
 | `i64.reinterpret/f64` | …
 
-| Name | Precedence |
-| ---- | ---- |
-
+| Name | Precedence | Direction | Example(s) |
+| ---- | ---- | ---- | ---- |
+| statements | 16 | | `if (…) { … }`, ` {… }` |
+| literal | 15 | | `2.0` |
+| variable | 15 | | `$a` |
+| group | 15 | | `( … )` |
+| call | 15 | | `call`, `call_import` |
+| load | 15 | | `i32.load` |
+| unary operators | 14 | | `-`, `f64.floor` |
+| conversion | 14 | | `f32.convert_s/i32 1` |
+| copysign | 13 | | |
+| min/max | 12 | | `f32.min`, `i32.max` |
+| mutplication | 11 | left | `*`, `/` |
+| addition | 10 | left | `+`, `-` |
+| bitwise shift | 9 | left | `<<` |
+| comparison | 8 | left | `<`, `>=` |
+| equality | 7 | left | `==`, `!=` |
+| bitwise and | 6 | left | `&` |
+| bitwise xor | 5 | left | `^` |
+| bitwise or | 4 | left | `|` |
+| select | 3 | | `select … , … ? …` |
+| store | 2 | | `i32.store` |
+| assignment | 1 | right | `$a = …` |
