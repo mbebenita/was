@@ -12,6 +12,6 @@ function $foo() : () {
 	if (if (1) { if (if (1) { 2 }) { 2 } else { 3 } }) { 2 } else { if (if (1) { 2 }) { 2 } else { 3 } }
 	return return
 	return if (1) { 2 }
-	return select 1, 2 ? 3
+	return select (1, 2, 3)
 $foo:
 }

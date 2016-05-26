@@ -319,7 +319,7 @@ group_expression
    | '(' assignment_expression ')'
    | call_expression
    | load_expression
-   | precedence_expression
+   | operator_expression
    | block_expression
    ;
 
@@ -384,17 +384,17 @@ prefix_expression
    | '-' prefix_expression
    ;
 
-prefix_precedence_expression
-   : type '.' typed_unary_operator prefix_expression
+prefix_operator_expression
+   : type '.' typed_unary_operator '(' expression ')'
    ;
 
-copysign_expression
-   : type '.' COPYSIGN expression ',' prefix_expression { trace("copysign_expression"); }
+copysign_operator_expression
+   : type '.' COPYSIGN '(' expression ',' expression ')' { trace("copysign_expression"); }
    ;
 
-minmax_expression
-   : type '.' MIN expression ',' prefix_expression { trace("minmax_expression"); }
-   | type '.' MAX expression ',' prefix_expression { trace("minmax_expression"); }
+minmax_operator_expression
+   : type '.' MIN '(' expression ',' expression ')' { trace("minmax_expression"); }
+   | type '.' MAX '(' expression ',' expression ')' { trace("minmax_expression"); }
    ;
 
 multiplicative_operator
@@ -473,8 +473,8 @@ bitwise_or_expression
    | bitwise_or_expression '|' bitwise_xor_expression { trace("bitwise_or_expression"); }
    ;
 
-select_expression
-   : SELECT expression ',' expression '?' bitwise_or_expression { trace("select_expression"); }
+select_operator_expression
+   : SELECT '(' expression ',' expression ',' expression ')' { trace("select_expression"); }
    ;
 
 store_expression
@@ -487,11 +487,11 @@ assignment_expression
    | IDENTIFIER '=' assignment_expression { trace("assignment_expression"); }
    ;
 
-precedence_expression
-   : prefix_precedence_expression
-   | copysign_expression
-   | minmax_expression
-   | select_expression
+operator_expression
+   : prefix_operator_expression
+   | copysign_operator_expression
+   | minmax_operator_expression
+   | select_operator_expression
    ;
 
 block_expression
