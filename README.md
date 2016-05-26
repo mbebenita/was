@@ -25,7 +25,7 @@ Most Was grammar rules are defined in terms of printable ASCII-range code points
 
 An identifier is prefixed with `$` characters. The identifier can be any stream of bytes including zero-length one:
 
- - The characters must be one of ASCII chars: `[0-9a-zA-Z_$]`;
+ - The characters must be one of ASCII chars: `[0-9a-zA-Z_$.]`;
  - Or, hex encoded byte in form: `\` HEXDIGIT HEXDIGIT, where HEXDIGIT is `[0-9a-fA-F]`.
  
 Examples of valid identifiers include: `$abc`, `$0`, `$_0`, `$\00` and `$`.
@@ -71,6 +71,7 @@ In fact, Was does not have statements, it only has expressions which are space d
 | Hex integer         | 0xff                                           | Integer suffixes        |
 | Octal integer       | 0o77                                           | Integer suffixes        |
 | Binary integer      | 0b11001100                                     | Integer suffixes        |
+| Hex floating-point  | 0x1.abc012p+789                                | Floating-point suffixes |
 | Floating-point      | 123.0E+77                                      | Floating-point suffixes |
 
 
@@ -86,11 +87,11 @@ The floating-point suffix must be the name of one of the floating-point types: `
 | `nop` | `nop`
 | `block` | `{` … [ *break-label* `:` ] `}` | `{}`, `{ br $a nop $a:}`
 | `loop` | `loop` [ *continue-label* ] `{` …  [ *break-label* `:` ] `}` | `loop $a { br $a }`
-| `if` | `if` `(` *expr* `)` `{` *expr* * `}` | `if 0 { 1 }`
-| `if_else` | `if` `(` *expr* `)` `{` *expr* * `}` `else` `{` *expr* *`}` | `if 0 { 1 } else { 2 }`
+| `if` | `if` `(` *expr* `)` `{` *expr* * `}` | `if (0) { 1 }`
+| `if_else` | `if` `(` *expr* `)` `{` *expr* * `}` `else` `{` *expr* *`}` | `if (0) { 1 } else { 2 }`
 | `select` | `select` `(` *expr* `,` *expr* `,` *expr* `)` | `select (1, 2, $x < $y)`
 | `br` | `br` [ `(` *expr* `)` ] *label* | `br $a`
-| `br_if` | `br_if` `(` *expr* [ ',' *expr* ] `)` *label* | `br_if ($x < $y, 1) $a`
+| `br_if` | `br_if` `(` *expr* [ ',' *expr* ] `)` *label* | `br_if (1, $x < $y) $a`
 | `br_table` | `br_table` `(` *expr* [ ',' *expr* ] `)` `[` *case-label* `,` … `]` *default-label*  | `br_table (1) [$x, $y] $z`
 | `return` | `return` [ *expr* ] | `return`
 | `unreachable` | `unreachable` | `unreachable`
