@@ -23,12 +23,12 @@ Most Was grammar rules are defined in terms of printable ASCII-range code points
 
 ## Identifiers
 
-An identifier is prefixed with `$` characters. The identifier can be any stream of bytes including with zero length:
+An identifier is prefixed with `$` characters. The identifier can be any stream of bytes including zero-length one:
 
  - The characters must be one of ASCII chars: `[0-9a-zA-Z_$]`;
  - Or, hex encoded byte in form: `\` HEXDIGIT HEXDIGIT, where HEXDIGIT is `[0-9a-fA-F]`.
  
-Examples of valid identifiers include: `$abc`, `$0`, `$_0`, `$\00` and '$'.
+Examples of valid identifiers include: `$abc`, `$0`, `$_0`, `$\00` and `$`.
 The `$` sigil prefix on identifiers cleanly ensures that they never collide with as keywords.
 
 ## Comments
@@ -88,10 +88,10 @@ The floating-point suffix must be the name of one of the floating-point types: `
 | `loop` | `loop` [ *continue-label* ] `{` …  [ *break-label* `:` ] `}` | `loop $a { br $a }`
 | `if` | `if` `(` *expr* `)` `{` *expr* * `}` | `if 0 { 1 }`
 | `if_else` | `if` `(` *expr* `)` `{` *expr* * `}` `else` `{` *expr* *`}` | `if 0 { 1 } else { 2 }`
-| `select` | `select` *expr* `,` *expr* `?` *expr* | `select 1, 2 ? $x < $y`
+| `select` | `select` `(` *expr* `,` *expr* `,` *expr* `)` | `select (1, 2, $x < $y)`
 | `br` | `br` [ `(` *expr* `)` ] *label* | `br $a`
-| `br_if` | `br_if` `(` *expr [ ',' *expr* ] `)` *label* | `br_if $x < $y, 1, $a`
-| `br_table` | `br_table` `(` *expr* [ ',' *expr* ] `)` `[` *case-label* `,` … `]` *default-label*  | `br_table 1, [$x, $y], $z`
+| `br_if` | `br_if` `(` *expr* [ ',' *expr* ] `)` *label* | `br_if ($x < $y, 1) $a`
+| `br_table` | `br_table` `(` *expr* [ ',' *expr* ] `)` `[` *case-label* `,` … `]` *default-label*  | `br_table (1) [$x, $y] $z`
 | `return` | `return` [ *expr* ] | `return`
 | `unreachable` | `unreachable` | `unreachable`
 
