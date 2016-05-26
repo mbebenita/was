@@ -55,7 +55,7 @@ INFINITY        {SIGN}?"infinity"
 NAN             {SIGN}?"nan"|{SIGN}?"nan:0x"{HEXDIGIT}+
 FLOAT           ({FLOAT0}|{FLOAT1}|{HEXFLOAT}|{INFINITY}|{NAN}){FLOATSUFFIX}?
 TEXT            \"{CHARACTER}*\"
-ATOM            ({LETTER}|{DIGIT}|\$|_)+
+ATOM            ({LETTER}|{DIGIT}|\$|_|\\{HEXDIGIT}{HEXDIGIT})*
 IDENTIFIER      \${ATOM}
 
 %%

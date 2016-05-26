@@ -23,13 +23,13 @@ Most Was grammar rules are defined in terms of printable ASCII-range code points
 
 ## Identifiers
 
-An identifier is any Unicode string of the following form:
+An identifier is prefixed with `$` characters. The identifier can be any stream of bytes including with zero length:
 
- - The first character is `$` and must be followed by one or more characters.
- - The remaining characters must be one of: `[0-9]`, `[a-z]`, `[A-Z]`, `_`.
+ - The characters must be one of ASCII chars: `[0-9a-zA-Z_$]`;
+ - Or, hex encoded byte in form: `\` HEXDIGIT HEXDIGIT, where HEXDIGIT is `[0-9a-fA-F]`.
  
-Examples of valid identifiers include: `$abc`, `$0`, `$_0`, however, `$` alone is not a valid identifier.
-The `$` sigil on identifiers cleanly ensures that they never collide with Was keywords.
+Examples of valid identifiers include: `$abc`, `$0`, `$_0`, `$\00` and '$'.
+The `$` sigil prefix on identifiers cleanly ensures that they never collide with as keywords.
 
 ## Comments
 
