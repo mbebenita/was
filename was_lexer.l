@@ -22,6 +22,11 @@ typedef WAS::WAS_Parser::token token;
 /* update location on matching */
 #define YY_USER_ACTION loc->step(); loc->columns(yyleng);
 
+void WAS::WAS_Scanner::LexerError(const char* msg) {
+   std::cerr << msg << " at " << *loc << std::endl;
+   exit(2);
+}
+
 %}
 
 %option debug

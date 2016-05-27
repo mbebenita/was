@@ -23,6 +23,7 @@ public:
    // YY_DECL defined in WAS_lexer.l
    // Method body created by flex in WAS_lexer.yy.cc
 
+   virtual void LexerError(const char* msg);
 
 private:
    /* yyval ptr */
