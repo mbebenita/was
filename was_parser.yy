@@ -197,21 +197,21 @@ module_item
    ;
 
 import_declaration
-   : IMPORT TEXT AS IDENTIFIER FROM TEXT TYPEOF IDENTIFIER { trace("import_declaration"); }
-   | IMPORT TEXT AS IDENTIFIER FROM TEXT TYPEOF function_signature { trace("import_declaration"); }
+   : IMPORT TEXT AS IDENTIFIER FROM TEXT TYPEOF IDENTIFIER ';' { trace("import_declaration"); }
+   | IMPORT TEXT AS IDENTIFIER FROM TEXT TYPEOF function_signature ';' { trace("import_declaration"); }
    ;
 
 export_declaration
-   : EXPORT MEMORY AS TEXT { trace("export_memory_declaration"); }
-   | EXPORT IDENTIFIER AS TEXT { trace("export_declaration"); }
+   : EXPORT MEMORY AS TEXT ';' { trace("export_memory_declaration"); }
+   | EXPORT IDENTIFIER AS TEXT ';' { trace("export_declaration"); }
    ;
 
 type_declaration
-   : TYPE IDENTIFIER OF function_signature { trace("type_declaration"); }
+   : TYPE IDENTIFIER OF function_signature ';' { trace("type_declaration"); }
    ;
 
 table_declaration
-   : TABLE '[' identifier_list ']' { trace("table_declaration"); }
+   : TABLE '[' identifier_list ']' ';' { trace("table_declaration"); }
    ;
 
 memory_declaration
@@ -235,7 +235,7 @@ segment_list
    ;
 
 segment
-   : SEGMENT INT ',' TEXT { trace("segment"); }
+   : SEGMENT INT ',' TEXT { trace("segment"); } ';'
    ;
 
 function_signature
@@ -249,7 +249,7 @@ function_declaration
    ;
 
 local_declaration_statement
-   : VAR local_declaration_list
+   : VAR local_declaration_list ';'
    ;
 
 local_declaration_statement_sequence
@@ -287,24 +287,25 @@ multi_block_content
    ;
 
 inner_block_content
-   : label
-   | inner_block_content label
-   | expression_sequence_with_tail_label
-   | inner_block_content expression_sequence_with_tail_label
+   : optional_expression_sequence_with_label
+   | inner_block_content optional_expression_sequence_with_label
    ;
    
 block_content
-   : label
+   : optional_expression_sequence_with_label
    | expression_sequence
-   | expression_sequence_with_tail_label
+   | expression_sequence ';'
    ;
 
-expression_sequence_with_tail_label
-   : expression_sequence label
-   
+optional_expression_sequence_with_label
+   : label
+   | expression_sequence label
+   | expression_sequence ';' label
+   ;
+
 expression_sequence
    : expression
-   | expression_sequence expression { trace("expression_sequence"); }
+   | expression_sequence ';' expression { trace("expression_sequence"); }
    ;
 
 literal

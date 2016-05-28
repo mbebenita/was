@@ -7,6 +7,6 @@ function $0() : (i32) {}
 
 function $0($a $b $c : i32) : (i32) {}
 function $0($a $b $c : i32) : (i32, i32, i32) {
-	var $a $b $c : i32
-	var $a $b $c : i32, $d : i32
+	var $a $b $c : i32;
+	var $a $b $c : i32, $d : i32;
 }

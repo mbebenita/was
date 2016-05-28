@@ -1,5 +1,5 @@
 function $foo() : () {
-    select(1, 2, 3)
-    select(1, 2, if (2) { 1 } else { 0 })
-    select(1 + 1, select(1,2,3), 3 * 3 + 2)
+    select(1, 2, 3);
+    select(1, 2, if (2) { 1 } else { 0 });
+    select(1 + 1, select(1,2,3), 3 * 3 + 2);
 }

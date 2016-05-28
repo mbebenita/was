@@ -1,33 +1,33 @@
 function $foo() : () {
 	// Call Expressions
-	call $foo ()
-	call $foo () + 1
-	call $foo () + call $foo ()
-	call $foo ($foo)
-	call $foo ($foo) + call $foo ($foo)
-	call $foo ($foo, $bar)
-	call $foo ($foo, $bar) + call $foo ($foo, $bar)
-	call $foo ($foo, call $foo ($foo))
+	call $foo ();
+	call $foo () + 1;
+	call $foo () + call $foo ();
+	call $foo ($foo);
+	call $foo ($foo) + call $foo ($foo);
+	call $foo ($foo, $bar);
+	call $foo ($foo, $bar) + call $foo ($foo, $bar);
+	call $foo ($foo, call $foo ($foo));
 
 	// Call Import Expressions
-	call_import $foo ()
-	call_import $foo () + 1
-	call_import $foo () + call_import $foo ()
-	call_import $foo ($foo)
-	call_import $foo ($foo) + call_import $foo ($foo)
-	call_import $foo ($foo, $bar)
-	call_import $foo ($foo, $bar) + call_import $foo ($foo, $bar)
-	call_import $foo ($foo, call_import $foo ($foo))
+	call_import $foo ();
+	call_import $foo () + 1;
+	call_import $foo () + call_import $foo ();
+	call_import $foo ($foo);
+	call_import $foo ($foo) + call_import $foo ($foo);
+	call_import $foo ($foo, $bar);
+	call_import $foo ($foo, $bar) + call_import $foo ($foo, $bar);
+	call_import $foo ($foo, call_import $foo ($foo));
 
 	// Call Indirect Expressions
-	call_indirect $foo [1] ()
-	call_indirect $foo [1] () + 1
-	call_indirect $foo [1] () + call_import $foo ()
-	call_indirect $foo [1] ($foo)
-	call_indirect $foo [1] ($foo) + call_indirect $foo [1] ($foo)
-	call_indirect $foo [1] ($foo, $bar)
-	call_indirect $foo [1] ($foo, $bar) + call_indirect $foo [1] ($foo, $bar)
-	call_indirect $foo [1] ($foo, call_indirect $foo [1] ($foo))
+	call_indirect $foo [1] ();
+	call_indirect $foo [1] () + 1;
+	call_indirect $foo [1] () + call_import $foo ();
+	call_indirect $foo [1] ($foo);
+	call_indirect $foo [1] ($foo) + call_indirect $foo [1] ($foo);
+	call_indirect $foo [1] ($foo, $bar);
+	call_indirect $foo [1] ($foo, $bar) + call_indirect $foo [1] ($foo, $bar);
+	call_indirect $foo [1] ($foo, call_indirect $foo [1] ($foo));
 
 	// Mix
 	call_indirect $foo [call $foo ()] ($foo, call_indirect $foo [call_import $foo ()] ($foo))
