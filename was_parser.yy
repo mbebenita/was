@@ -96,6 +96,9 @@
 %token CALL
 %token CALL_IMPORT
 %token CALL_INDIRECT
+%token NOP
+%token UNREACHABLE
+
 
 %token FUNCTION
 %token IMPORT
@@ -388,6 +391,7 @@ typed_unary_operator
 prefix_expression
    : group_expression
    | '-' prefix_expression
+   | '!' prefix_expression
    ;
 
 prefix_operator_expression
@@ -502,6 +506,8 @@ block_expression
    | br_table_expression
    | return_expression
    | block
+   | NOP
+   | UNREACHABLE
    ;
 
 expression   

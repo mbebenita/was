@@ -91,6 +91,9 @@ IDENTIFIER      \${ATOM}
 "call_import"                  { return token::CALL_IMPORT; }
 "call_indirect"                { return token::CALL_INDIRECT; }
 
+"nop"                          { return token::NOP; }
+"unreachable"                  { return token::UNREACHABLE; }
+
 "var"                          { return token::VAR; }
 
 ("i32"|"i64")":8s"             { return token::LOAD_S_8; }
@@ -158,8 +161,8 @@ IDENTIFIER      \${ATOM}
 "%s"            { return token::REMS; }
 "%u"            { return token::REMU; }
 "<<"            { return token::SHL; } 
-">>"            { return token::SHRU; } 
-">>>"           { return token::SHRS; }
+">>u"           { return token::SHRU; }
+">>s"           { return token::SHRS; }
 
 ">="            { return token::LE; } 
 "<="            { return token::GE; }
