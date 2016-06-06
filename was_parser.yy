@@ -395,16 +395,17 @@ prefix_expression
    ;
 
 prefix_operator_expression
-   : type '.' typed_unary_operator '(' expression ')'
+   : type '.' typed_unary_operator '(' expression ')' { trace("typed_unary_expression"); }
    ;
 
-copysign_operator_expression
-   : type '.' COPYSIGN '(' expression ',' expression ')' { trace("copysign_expression"); }
+typed_binary_operator
+   : COPYSIGN
+   | MIN
+   | MAX
    ;
 
-minmax_operator_expression
-   : type '.' MIN '(' expression ',' expression ')' { trace("minmax_expression"); }
-   | type '.' MAX '(' expression ',' expression ')' { trace("minmax_expression"); }
+binary_operator_expression
+   : type '.' typed_binary_operator '(' expression ',' expression ')' { trace("typed_binary_expression"); }
    ;
 
 multiplicative_operator
@@ -431,11 +432,15 @@ additive_expression
    | additive_expression additive_operator multiplicative_expression { trace("additive_expression"); }
    ;
 
+shift_operator
+   : SHL
+   | SHRU
+   | SHRS
+   ;
+
 shift_expression
    : additive_expression
-   | shift_expression SHL additive_expression { trace("shift_expression"); }
-   | shift_expression SHRU additive_expression { trace("shift_expression"); }
-   | shift_expression SHRS additive_expression { trace("shift_expression"); }
+   | shift_expression shift_operator additive_expression { trace("shift_expression"); }
    ;
 
 relational_expression_operator
@@ -495,8 +500,7 @@ assignment_expression
 
 operator_expression
    : prefix_operator_expression
-   | copysign_operator_expression
-   | minmax_operator_expression
+   | binary_operator_expression
    | select_operator_expression
    ;
 
