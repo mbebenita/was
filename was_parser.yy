@@ -78,6 +78,7 @@
 %token RETURN
 
 %token IDENTIFIER
+%token BOOKMARK
 %token I32
 %token I64
 %token F32
@@ -316,14 +317,24 @@ literal
    | FLOAT
    ;
 
+bookmarks
+   : BOOKMARK
+   | bookmarks BOOKMARK
+   ;
+
 group_expression
-   : literal
+   : '(' assignment_expression ')'
+   | literal
    | IDENTIFIER
-   | '(' assignment_expression ')'
    | call_expression
    | load_expression
    | operator_expression
    | block_expression
+   ;
+
+bookmarked_group_expression
+   : group_expression
+   | bookmarks group_expression
    ;
 
 align
@@ -389,9 +400,14 @@ typed_unary_operator
    ;
 
 prefix_expression
-   : group_expression
-   | '-' prefix_expression
-   | '!' prefix_expression
+   : '-' bookmarked_prefix_expression
+   | '!' bookmarked_prefix_expression
+   ;
+
+bookmarked_prefix_expression
+   : bookmarked_group_expression
+   | prefix_expression
+   | bookmarks prefix_expression
    ;
 
 prefix_operator_expression
@@ -418,8 +434,8 @@ multiplicative_operator
    ;
 
 multiplicative_expression
-   : prefix_expression
-   | multiplicative_expression multiplicative_operator prefix_expression { trace("multiplicative_expression"); }
+   : bookmarked_prefix_expression
+   | multiplicative_expression multiplicative_operator bookmarked_prefix_expression { trace("multiplicative_expression"); }
    ;
 
 additive_operator
@@ -491,6 +507,7 @@ bitwise_or_expression
 select_operator_expression
    : SELECT '(' expression ',' expression ',' expression ')' { trace("select_expression"); }
    ;
+   
    
 assignment_expression
    : bitwise_or_expression

@@ -1,0 +1,8 @@
+function $f() : () {
+  @0 nop;
+  @2(@1 ($s * 9) + @3 $t);
+  @4 if (@5 1) { @6 unreachable; };
+  @7 { @8 br $r; @9 $t $r: };
+  @10 loop $r { };
+  @11 return @12 $t; 
+}

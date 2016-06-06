@@ -62,6 +62,7 @@ FLOAT           ({FLOAT0}|{FLOAT1}|{HEXFLOAT}|{INFINITY}|{NAN}){FLOATSUFFIX}?
 TEXT            \"{CHARACTER}*\"
 ATOM            ({LETTER}|{DIGIT}|\$|_|\.|\\{HEXDIGIT}{HEXDIGIT})*
 IDENTIFIER      \${ATOM}
+BOOKMARK        \@{ATOM}
 
 %%
 %{          // Code executed at the beginning of yylex
@@ -152,6 +153,7 @@ IDENTIFIER      \${ATOM}
 "reinterpret/i64"              { return token::REINTERPRET_I64; }
 
 {IDENTIFIER}    { return token::IDENTIFIER; }
+{BOOKMARK}      { return token::BOOKMARK; }
 {INT}           { return token::INT; }
 {FLOAT}         { return token::FLOAT; }
 {TEXT}          { return token::TEXT; }
