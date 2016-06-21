@@ -14,6 +14,12 @@ To parse a single file and print its grammar production rules, use:
 ./was test/test.was --debug
 ```
 
+To export a file and print its AST in form of s-expression, use:
+
+```
+./was test/test.was --print
+```
+
 ## [Sample Was File](test/perlin.pass)
 
 # Lexical Structure
