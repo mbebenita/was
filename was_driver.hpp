@@ -15,7 +15,9 @@ public:
 
   virtual ~WAS_Driver();
 
-  void parse(const char *filename, int debug_level, int trace_level);
+  void parse(const char *filename, int debug_level);
+
+  AST::NodePtr result;
 
 private:
   WAS::WAS_Parser *parser = nullptr;

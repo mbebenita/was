@@ -11,9 +11,7 @@ WAS::WAS_Driver::~WAS_Driver() {
   parser = nullptr;
 }
 
-int trace_level;
-
-void WAS::WAS_Driver::parse(const char *const filename, int debug_level, int trace_level_) {
+void WAS::WAS_Driver::parse(const char *const filename, int debug_level) {
   assert(filename != nullptr);
   std::ifstream in_file(filename);
   if (!in_file.good())
@@ -30,7 +28,6 @@ void WAS::WAS_Driver::parse(const char *const filename, int debug_level, int tra
   try {
     parser = new WAS::WAS_Parser(*scanner, *this);
     parser->set_debug_level(debug_level);
-    trace_level = trace_level_;
   } catch (std::bad_alloc &ba) {
     std::cerr << "Failed to allocate parser: (" << ba.what()
               << "), exiting!!\n";

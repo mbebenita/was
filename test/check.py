@@ -28,7 +28,7 @@ def check(was):
   args = [os.path.join('..', 'was'), was]
   trace_file_exists = os.path.exists(trace_file)
   if trace_file_exists:
-    args.append("--trace")
+    args.append("--print")
     todo_count += open(trace_file, 'r').read().count("TODO");
   proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   out, err = proc.communicate()
@@ -36,7 +36,7 @@ def check(was):
   sys.stdout.write('PARSE')
   if passed and trace_file_exists:
     sys.stdout.write(' + TRACE')
-    args = [os.path.join('..', 'was'), trace_file, '--trace']
+    args = [os.path.join('..', 'was'), trace_file, '--print']
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     trace, err = proc.communicate()
     if out != trace:

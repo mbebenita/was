@@ -10,9 +10,6 @@
 /* typedef to make the returns for the tokens shorter */
 typedef WAS::WAS_Parser::token token;
 
-/* define to keep from re-typing the same code over and over */
-#define STOKEN( x ) ( new std::string( x ) )
-
 /* define yyterminate as this instead of NULL */
 #define yyterminate() return( token::END )
 
@@ -97,18 +94,24 @@ BOOKMARK        \@{ATOM}
 
 "var"                          { return token::VAR; }
 
-("i32"|"i64")":8s"             { return token::LOAD_S_8; }
-("i32"|"i64")":8u"             { return token::LOAD_U_8; }
+"i32:8s"                       { return token::I32_LOAD_S_8; }
+"i32:8u"                       { return token::I32_LOAD_U_8; }
+"i64:8s"                       { return token::I64_LOAD_S_8; }
+"i64:8u"                       { return token::I64_LOAD_U_8; }
 
-("i32"|"i64")":16s"            { return token::LOAD_S_16; }
-("i32"|"i64")":16u"            { return token::LOAD_U_16; }
+"i32:16s"                      { return token::I32_LOAD_S_16; }
+"i32:16u"                      { return token::I32_LOAD_U_16; }
+"i64:16s"                      { return token::I64_LOAD_S_16; }
+"i64:16u"                      { return token::I64_LOAD_U_16; }
 
-"i64:32s"                      { return token::LOAD_S_32; }
-"i64:32u"                      { return token::LOAD_U_32; }
+"i64:32s"                      { return token::I64_LOAD_S_32; }
+"i64:32u"                      { return token::I64_LOAD_U_32; }
 
-("i32"|"i64")":8"              { return token::STORE_8; }
-("i32"|"i64")":16"             { return token::STORE_16; }
-"i64:32"                       { return token::STORE_32; }
+"i32:8"                        { return token::I32_STORE_8; }
+"i32:16"                       { return token::I32_STORE_16; }
+"i64:8"                        { return token::I64_STORE_8; }
+"i64:16"                       { return token::I64_STORE_16; }
+"i64:32"                       { return token::I64_STORE_32; }
 
 "align"                        { return token::ALIGN; }
 
@@ -152,11 +155,11 @@ BOOKMARK        \@{ATOM}
 "reinterpret/i32"              { return token::REINTERPRET_I32; } 
 "reinterpret/i64"              { return token::REINTERPRET_I64; }
 
-{IDENTIFIER}    { return token::IDENTIFIER; }
+{IDENTIFIER}    { yylval->build<AST::Node*>(AST::NodeFactory::createIdentifier(yytext)); return token::IDENTIFIER; }
 {BOOKMARK}      { return token::BOOKMARK; }
-{INT}           { return token::INT; }
-{FLOAT}         { return token::FLOAT; }
-{TEXT}          { return token::TEXT; }
+{INT}           { yylval->build<AST::Node*>(AST::NodeFactory::createIntConstant(yytext)); return token::INT; }
+{FLOAT}         { yylval->build<AST::Node*>(AST::NodeFactory::createFloatConstant(yytext)); return token::FLOAT; }
+{TEXT}          { yylval->build<AST::Node*>(AST::NodeFactory::createText(yytext)); return token::TEXT; }
 
 "/s"            { return token::DIVS; }
 "/u"            { return token::DIVU; }
