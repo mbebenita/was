@@ -47,7 +47,7 @@
                      shift_expression return_expression additive_expression block literal
                      expression align bookmarked_group_expression label
                      multiplicative_expression bookmarked_prefix_expression prefix_expression
-                     function_declaration module_item module type_annotation function_signature
+                     function_declaration module_item module type_annotation
                      type_declaration segment memory_declaration table_declaration
                      import_declaration export_declaration
 %type <AST::LiteralName> typed_binary_operator type typed_unary_operator
@@ -57,7 +57,7 @@
                    expression_sequence optional_local_declaration_statement_sequence
                    local_declaration_statement_sequence local_declaration_statement function_body
                    type_list optional_type_list identifier_list module_item_sequence segment_list
-                   optional_segment_list memory_limits
+                   optional_segment_list memory_limits function_signature
 %type <AST::LabeledNodes> optional_multi_block_content optional_expression_sequence_with_label
                           multi_block_content inner_block_content block_content
 %type <AST::MemoryOperator> memory_operator
@@ -217,7 +217,7 @@ import_declaration
    : IMPORT TEXT AS IDENTIFIER FROM TEXT TYPEOF IDENTIFIER ';'
     { AST::ListNodePtr import = AST::NodeFactory::createListNode("import", $4, $2, $6); import->append($8); $$ = import; }
    | IMPORT TEXT AS IDENTIFIER FROM TEXT TYPEOF function_signature ';'
-    { AST::ListNodePtr import = AST::NodeFactory::createListNode("import", $4, $2, $6); import->append($8); $$ = import; }
+    { AST::ListNodePtr import = AST::NodeFactory::createListNode("import", $4, $2, $6); import->move($8); $$ = import; }
    ;
 
 export_declaration
@@ -228,7 +228,8 @@ export_declaration
    ;
 
 type_declaration
-   : TYPE IDENTIFIER OF function_signature ';' { $$ = AST::NodeFactory::createListNode("type", $2, $4); }
+   : TYPE IDENTIFIER OF function_signature ';'
+     { AST::ListNodePtr fn = AST::NodeFactory::createListNode("func"); fn->move($4); $$ = AST::NodeFactory::createListNode("type", $2, fn); }
    ;
 
 table_declaration
@@ -263,9 +264,11 @@ segment
 
 function_signature
    : FUNCTION '(' optional_type_list ')'
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("func"); node->moveWrapped($3, "param"); $$ = node; }
+     { AST::Nodes nodes; nodes.push_back(AST::NodeFactory::createListNode("param", $3)); $$ = nodes; }
    | FUNCTION '(' optional_type_list ')' ':' '(' optional_type_list ')' 
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("func"); node->moveWrapped($3, "param"); node->moveWrapped($7, "result"); $$ = node; }
+     { AST::Nodes nodes; nodes.push_back(AST::NodeFactory::createListNode("param", $3));
+       if ($7.size() > 0) nodes.push_back(AST::NodeFactory::createListNode("result", $7));
+       $$ = nodes; }
    ;
 
 function_declaration
@@ -371,9 +374,9 @@ align
 
 address
    : '[' expression ']'                   { $$ = AST::MemoryAddress($2, nullptr, nullptr); }
-   | '[' expression ',' align ']'         { $$ = AST::MemoryAddress($2, nullptr, $4); }
-   | '[' expression ',' INT ']'           { $$ = AST::MemoryAddress($2, $4, nullptr); }
-   | '[' expression ',' INT ',' align ']' { $$ = AST::MemoryAddress($2, $4, $6); }
+   | '[' expression ',' align ']'         { $$ = AST::MemoryAddress($2, nullptr, static_cast<AST::LiteralNodePtr>($4)); }
+   | '[' expression ',' INT ']'           { $$ = AST::MemoryAddress($2, static_cast<AST::LiteralNodePtr>($4), nullptr); }
+   | '[' expression ',' INT ',' align ']' { $$ = AST::MemoryAddress($2, static_cast<AST::LiteralNodePtr>($4), static_cast<AST::LiteralNodePtr>($6)); }
    ;
 
 memory_operator
@@ -401,9 +404,8 @@ memory_operator
 load_expression
    : memory_operator address
      { AST::ListNode* node = AST::NodeFactory::createListNode($1.name ? $1.name : "load", $1.type);
-       if ($2.offset) node->append($2.offset);
-       else if ($2.flags) node->append(AST::NodeFactory::createLiteralNode("+0"));
-       if ($2.flags) node->append($2.flags);
+       if ($2.offset) node->append(AST::NodeFactory::createFlag("offset=", $2.offset));
+       if ($2.flags) node->append(AST::NodeFactory::createFlag("align=", $2.flags));
        if ($2.base) node->append($2.base);
        $$ = node; }
    ;
@@ -560,9 +562,8 @@ assignment_expression
        $$ = node; }
    | memory_operator address '=' assignment_expression
      { AST::ListNode* node = AST::NodeFactory::createListNode($1.name ? $1.name : "store", $1.type);
-       if ($2.offset) node->append($2.offset);
-       else if ($2.flags) node->append(AST::NodeFactory::createLiteralNode("+0"));
-       if ($2.flags) node->append($2.flags);
+       if ($2.offset) node->append(AST::NodeFactory::createFlag("offset=", $2.offset));
+       if ($2.flags) node->append(AST::NodeFactory::createFlag("align=", $2.flags));
        if ($2.base) node->append($2.base);
        node->append($4);
        $$ = node; }
@@ -589,9 +590,12 @@ expression
    ;
 
 call_expression
-   : CALL IDENTIFIER '(' optional_expression_list ')' { $$ = AST::NodeFactory::createListNode("call"); }
-   | CALL_IMPORT IDENTIFIER '(' optional_expression_list ')' { $$ = AST::NodeFactory::createListNode("call_import"); }
-   | CALL_INDIRECT IDENTIFIER '[' expression ']' '(' optional_expression_list ')' { $$ = AST::NodeFactory::createListNode("call_indirect"); }
+   : CALL IDENTIFIER '(' optional_expression_list ')'
+     { AST::ListNodePtr call = AST::NodeFactory::createListNode("call", $2); call->move($4); $$ = call; }
+   | CALL_IMPORT IDENTIFIER '(' optional_expression_list ')'
+     { AST::ListNodePtr call = AST::NodeFactory::createListNode("call_import", $2); call->move($4); $$ = call; }
+   | CALL_INDIRECT IDENTIFIER '[' expression ']' '(' optional_expression_list ')'
+     { AST::ListNodePtr call = AST::NodeFactory::createListNode("call_indirect", $2, $4); call->move($7); $$ = call; }
    ;
 
 return_expression
@@ -610,11 +614,11 @@ br_expression
    : BR IDENTIFIER
      { AST::ListNodePtr node = AST::NodeFactory::createListNode("br"); node->append($2); $$ = node; }
    | BR '(' expression ')' IDENTIFIER
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br"); node->append($3); node->append($5); $$ = node; }
+     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br"); node->append($5); node->append($3); $$ = node; }
    | BR_IF '(' expression ')' IDENTIFIER
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br_if"); node->append($3); node->append($5); $$ = node; }
+     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br_if"); node->append($5); node->append($3); $$ = node; }
    | BR_IF '(' expression ',' expression ')' IDENTIFIER
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br_if"); node->append($3); node->append($5); node->append($7); $$ = node; }
+     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br_if"); node->append($7); node->append($3); node->append($5); $$ = node; }
    ; 
 
 br_table_expression

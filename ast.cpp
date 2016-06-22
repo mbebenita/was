@@ -9,6 +9,15 @@ NodeFactory::createLiteralNode(LiteralType type_, StringPtr str_)
 }
 
 LiteralNodePtr
+NodeFactory::createFlag(LiteralName prefix, LiteralNodePtr node)
+{
+    std::string s(prefix);
+    s.insert(s.size(), *(node->str));
+    delete node;
+    return new LiteralNode(LiteralType::Flag, new std::string(s));
+}
+
+LiteralNodePtr
 NodeFactory::createLiteralNode(LiteralName keyword)
 {
     return new LiteralNode(LiteralType::Keyword, new std::string(keyword));
@@ -25,6 +34,15 @@ NodeFactory::createListNode(LiteralName keyword)
 {
     ListNode* node = new ListNode();
     node->append(NodeFactory::createLiteralNode(keyword));
+    return node;
+}
+
+ListNodePtr
+NodeFactory::createListNode(LiteralName keyword, Nodes& nodes)
+{
+    ListNode* node = new ListNode();
+    node->append(NodeFactory::createLiteralNode(keyword));
+    node->move(nodes);
     return node;
 }
 
@@ -91,8 +109,9 @@ LiteralNode::print(std::ostream& out)
           case InferredType::I64: out << "i64."; break;
           case InferredType::F32: out << "f32."; break;
           case InferredType::F64: out << "f64."; break;
-          case InferredType::Unknown: out << "???."; break;
-          default: break;
+          case InferredType::Any: out << "any."; break;
+          case InferredType::Void: out << "void."; break;
+          case InferredType::Unknown: out << "unk."; break;
         }
     }
     out << str->c_str();
@@ -248,4 +267,12 @@ AST::parse_inferred_type(LiteralName str)
         }
     }
     return InferredType::Unknown;
+}
+
+void
+Node::inferTypeIfUnknown(InferredType type)
+{
+    if (inferredType != InferredType::Unknown)
+        return;
+    inferredType = type;
 }

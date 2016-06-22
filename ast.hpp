@@ -33,8 +33,10 @@ namespace AST {
 
         Node(NodeKind kind_) : kind(kind_), inferredType(InferredType::Unknown) {}
         Node(NodeKind kind_, InferredType inferredType_) : kind(kind_), inferredType(inferredType_) {}
+        virtual ~Node() {}
 
         virtual void print(std::ostream& out) = 0;
+        void inferTypeIfUnknown(InferredType type);
     };
 
     typedef std::vector<NodePtr> Nodes;
@@ -51,6 +53,7 @@ namespace AST {
       Const,
       Text,
       Identifier,
+      Flag,
       Bookmark
     };
 
@@ -61,6 +64,7 @@ namespace AST {
         static LiteralNodePtr createLiteralNode(LiteralName keyword);
         static ListNodePtr createListNode();
         static ListNodePtr createListNode(LiteralName keyword);
+        static ListNodePtr createListNode(LiteralName keyword, Nodes& nodes);
         static ListNodePtr createListNode(LiteralName keyword, NodePtr child);
         static ListNodePtr createListNode(LiteralName keyword, NodePtr child1, NodePtr child2);
         static ListNodePtr createListNode(LiteralName keyword, NodePtr child1, NodePtr child2, NodePtr child3);
@@ -72,6 +76,7 @@ namespace AST {
         static NodePtr createText(const char* str);
         static NodePtr createIntConstant(const char* str);
         static NodePtr createFloatConstant(const char* str);
+        static LiteralNodePtr createFlag(LiteralName prefix, LiteralNodePtr node);
     };
 
     class LiteralNode : public Node {
@@ -121,10 +126,10 @@ namespace AST {
 
     struct MemoryAddress {
         NodePtr base;
-        NodePtr offset;
-        NodePtr flags;
+        LiteralNodePtr offset;
+        LiteralNodePtr flags;
         MemoryAddress() : base(nullptr), offset(nullptr), flags(nullptr) {}
-        MemoryAddress(Node* base_, Node* offset_, Node* flags_) : base(base_), offset(offset_), flags(flags_) {}
+        MemoryAddress(Node* base_, LiteralNode* offset_, LiteralNode* flags_) : base(base_), offset(offset_), flags(flags_) {}
     };
 
     struct VarDefinition {
@@ -145,6 +150,7 @@ namespace AST {
     std::vector<T>& append_item_to(std::vector<T>& a, T b) { a.push_back(b); return a; }
 
     InferredType parse_inferred_type(LiteralName str);
+
 }  /* end namespace AST */
 
 #endif /* AST_HPP_ */
