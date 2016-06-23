@@ -2,6 +2,9 @@
 
 using namespace AST;
 
+Node::~Node()
+{ }
+
 LiteralNodePtr
 NodeFactory::createLiteralNode(LiteralType type_, StringPtr str_)
 {
@@ -100,6 +103,12 @@ NodeFactory::createListNode(LiteralName keyword, InferredType inferredType, Node
     return node;
 }
 
+LiteralNode::~LiteralNode()
+{
+    if (str)
+        delete str;
+}
+
 void
 LiteralNode::print(std::ostream& out)
 {
@@ -115,6 +124,12 @@ LiteralNode::print(std::ostream& out)
         }
     }
     out << str->c_str();
+}
+
+ListNode::~ListNode()
+{
+    for (Nodes::iterator it = children.begin(); it != children.end(); it++)
+        delete *it;
 }
 
 void
@@ -197,12 +212,21 @@ VarDefinitions::toASTNodes(const char* nodeName, Nodes& target) {
 }
 
 void
-VarDefinitions::fromNames(Nodes& names, NodePtr type) {
-    for (Nodes::iterator p = names.begin(); p != names.end(); p++) {
-        VarDefinition def;
-        def.name = *p;
-        def.type = type;
-        push_back(def);
+VarDefinitions::fromNames(Nodes& names, LiteralNodePtr type) {
+    Nodes::iterator p = names.begin();
+    if (p == names.end()) {
+        delete type;
+        return;
+    }
+    VarDefinition def;
+    def.name = *p;
+    def.type = type;
+    push_back(def);
+    for (p++; p != names.end(); p++) {
+        VarDefinition def2;
+        def2.name = *p;
+        def2.type = new LiteralNode(type->type, new std::string(*(type->str)), type->inferredType);
+        push_back(def2);
     }
     names.clear();
 }

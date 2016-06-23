@@ -30,16 +30,19 @@ int main(const int argc, const char **argv) {
   }
 
   for (std::string &source : sources) {
+    driver.result = nullptr;
     driver.parse(source.c_str(), debug_level);
 
+    AST::NodePtr ast = driver.result;
     if (inferTypes)
-      TI::infer_types(driver.result, inferTypes == 2);
+      TI::infer_types(ast, inferTypes == 2);
     if (print) {
       driver.result->print(std::cout);
       std::cout << std::endl;
       // TODO free resources
       driver.result = nullptr;
     }
+    delete ast;
   }
 
   return EXIT_SUCCESS;

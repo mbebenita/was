@@ -33,7 +33,7 @@ namespace AST {
 
         Node(NodeKind kind_) : kind(kind_), inferredType(InferredType::Unknown) {}
         Node(NodeKind kind_, InferredType inferredType_) : kind(kind_), inferredType(inferredType_) {}
-        virtual ~Node() {}
+        virtual ~Node();
 
         virtual void print(std::ostream& out) = 0;
         void inferTypeIfUnknown(InferredType type);
@@ -87,6 +87,7 @@ namespace AST {
 
         LiteralNode(LiteralType type_, StringPtr str_) : Node(NodeKind::Literal), type(type_), str(str_), showInferredType(false) {}
         LiteralNode(LiteralType type_, StringPtr str_, InferredType inferredType) : Node(NodeKind::Literal, inferredType), type(type_), str(str_), showInferredType(false) {}
+        ~LiteralNode();
 
         void print(std::ostream& out);
     };
@@ -96,6 +97,7 @@ namespace AST {
         Nodes children;
 
         ListNode() : Node(NodeKind::List) {}
+        ~ListNode();
 
         void append(NodePtr node);
         void insertAt(NodePtr node, size_t index);
@@ -141,7 +143,7 @@ namespace AST {
     class VarDefinitions : public std::vector<VarDefinition> {
       public:
         void toASTNodes(const char* nodeName, Nodes& nodes);
-        void fromNames(Nodes& names, NodePtr type);
+        void fromNames(Nodes& names, LiteralNodePtr type);
     };
 
     template<typename T>

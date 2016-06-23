@@ -655,7 +655,7 @@ expression_list
    ;
 
 local_declaration
-   : identifier_sequence type_annotation { AST::VarDefinitions defs; defs.fromNames($1, $2); $$ = defs; }
+   : identifier_sequence type_annotation { AST::VarDefinitions defs; defs.fromNames($1, static_cast<AST::LiteralNodePtr>($2)); $$ = defs; }
    ;
 
 optional_local_declaration_list
