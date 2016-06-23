@@ -1,5 +1,7 @@
 #include "ast.hpp"
 
+#include <cstring>
+
 using namespace AST;
 
 Node::~Node()
