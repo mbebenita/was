@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,7 @@ int main(const int argc, const char **argv) {
   int debug_level = 0;
   int print = 0;
   int inferTypes = 0;
+  std::string outputFilename;
   std::vector <std::string> sources;
   for (int i = 1; i < argc; i++) {
     if (std::string(argv[i]) == "--debug") {
@@ -24,10 +26,18 @@ int main(const int argc, const char **argv) {
       inferTypes = 1;
     } else if (std::string(argv[i]) == "--infer-types-td") {
       inferTypes = 2;
+    } else if (std::string(argv[i]) == "--output") {
+      outputFilename = argv[++i];
     } else {
       sources.push_back(std::string(argv[i]));
     }
   }
+
+  std::ostream* output;
+  if (outputFilename.empty())
+    output = &std::cout;
+  else
+    output = new std::ofstream(outputFilename);
 
   for (std::string &source : sources) {
     driver.result = nullptr;
@@ -37,13 +47,14 @@ int main(const int argc, const char **argv) {
     if (inferTypes)
       TI::infer_types(ast, inferTypes == 2);
     if (print) {
-      driver.result->print(std::cout);
-      std::cout << std::endl;
-      // TODO free resources
-      driver.result = nullptr;
+      driver.result->print(*output);
+      (*output) << std::endl;
     }
     delete ast;
   }
+
+  if (!outputFilename.empty())
+    delete output;
 
   return EXIT_SUCCESS;
 }
