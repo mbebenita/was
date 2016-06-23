@@ -22,6 +22,8 @@ int main(const int argc, const char **argv) {
       print = 1;
     } else if (std::string(argv[i]) == "--infer-types") {
       inferTypes = 1;
+    } else if (std::string(argv[i]) == "--infer-types-td") {
+      inferTypes = 2;
     } else {
       sources.push_back(std::string(argv[i]));
     }
@@ -31,7 +33,7 @@ int main(const int argc, const char **argv) {
     driver.parse(source.c_str(), debug_level);
 
     if (inferTypes)
-      TI::infer_types(driver.result);
+      TI::infer_types(driver.result, inferTypes == 2);
     if (print) {
       driver.result->print(std::cout);
       std::cout << std::endl;

@@ -273,9 +273,14 @@ function_signature
 
 function_declaration
    : FUNCTION IDENTIFIER '(' optional_local_declaration_list ')' function_body
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("func", $2); node->move($6); $$ = node; }
+     { AST::ListNodePtr node = AST::NodeFactory::createListNode("func", $2);
+       AST::Nodes params; $4.toASTNodes("param", params); node->move(params);
+       node->move($6); $$ = node; }
    | FUNCTION IDENTIFIER '(' optional_local_declaration_list ')' ':' '(' optional_type_list ')' function_body
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("func", $2); node->move($10); $$ = node; }
+     { AST::ListNodePtr node = AST::NodeFactory::createListNode("func", $2);
+       AST::Nodes params; $4.toASTNodes("param", params); node->move(params);
+       if ($8.size() > 0) node->append(AST::NodeFactory::createListNode("result", $8));
+       node->move($10); $$ = node; }
    ;
 
 local_declaration_statement

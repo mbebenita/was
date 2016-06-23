@@ -4,7 +4,7 @@
 #include "ast.hpp"
 
 namespace TI {
-    void infer_types(AST::NodePtr module);
+    void infer_types(AST::NodePtr module, bool topDown = false);
 } // end namespace TI
 
 

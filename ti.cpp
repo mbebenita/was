@@ -434,6 +434,10 @@ infer_expression_type(NodePtr item, BottomUpInferTypeContext& ctx)
             infer_expression_type(expr->children[1], ctx);
         infer_expression_type(expr->children[2], ctx);
         result = InferredType::I32;
+    } else if (isListNode(expr, "unreachable")) {
+        result = InferredType::Any;
+    } else if (isListNode(expr, "nop")) {
+        result = InferredType::Void;
     } else {
         result = exprNameNode->inferredType;
         for (Nodes::iterator it = expr->children.begin() + 1; it != expr->children.end(); it++) {
@@ -526,9 +530,12 @@ infer_types_bottom_up(ListNodePtr module)
 }
 
 void
-TI::infer_types(NodePtr node)
+TI::infer_types(NodePtr node, bool topDown)
 {
     if (!isListNode(node, "module"))
         return;
-    infer_types_bottom_up(static_cast<ListNodePtr>(node));
+    if (topDown)
+        infer_types_top_down(static_cast<ListNodePtr>(node));
+    else
+        infer_types_bottom_up(static_cast<ListNodePtr>(node));
 }
