@@ -26,7 +26,7 @@ isListNode(NodePtr node, LiteralName name)
     if (list->children.size() == 0 || !isLiteralNode(list->children[0]))
         return false;
     LiteralNodePtr firstChild = static_cast<LiteralNodePtr>(list->children[0]);
-    return strcmp(name, firstChild->str->c_str()) == 0;
+    return name == *(firstChild->str);
 }
 
 struct Signature {
