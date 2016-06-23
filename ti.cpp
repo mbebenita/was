@@ -331,10 +331,204 @@ infer_types_top_down(ListNodePtr module)
     }
 }
 
+struct BottomUpInferTypeContext {
+    SignatureMap types;
+    SignatureMap importTypes;
+    SignatureMap functionTypes;
+    std::map<std::string, InferredType> locals;
+};
+
+InferredType
+infer_expression_type(NodePtr item, BottomUpInferTypeContext& ctx)
+{
+    InferredType result = InferredType::Unknown;
+    ListNodePtr expr = static_cast<ListNodePtr>(item);
+    LiteralNodePtr exprNameNode = static_cast<LiteralNodePtr>(expr->children[0]);
+
+    if (isListNode(expr, "block") || isListNode(expr, "loop") ||
+               isListNode(expr, "then") || isListNode(expr, "else")) {
+        Nodes::iterator it = expr->children.begin() + 1;
+        result = InferredType::Void;
+        for (; it != expr->children.end(); it++) {
+            NodePtr i = *it;
+            if (!isListNode(i))
+                continue;
+            result = infer_expression_type(*it, ctx);
+        }
+    } else if (isListNode(expr, "if")) {
+        infer_expression_type(expr->children[1], ctx);
+        infer_expression_type(expr->children[2], ctx);
+        if (expr->children.size() > 2)
+            result = infer_expression_type(expr->children[3], ctx);
+        else
+            result = InferredType::Void;
+    } else if (isListNode(expr, "call")) {
+        SignatureMap::iterator found = ctx.functionTypes.find(*(static_cast<LiteralNodePtr>(expr->children[1])->str));
+        if (found != ctx.functionTypes.end()) {
+            const Signature& signature = found->second;
+            for (size_t i = 0; i < signature.params.size(); i++) {
+                infer_expression_type(expr->children[2 + i], ctx);
+            }
+            result = signature.results.size() > 0 ? signature.results[0] : InferredType::Void;
+        }
+    } else if (isListNode(expr, "call_import")) {
+        SignatureMap::iterator found = ctx.importTypes.find(*(static_cast<LiteralNodePtr>(expr->children[1])->str));
+        if (found != ctx.importTypes.end()) {
+            const Signature& signature = found->second;
+            for (size_t i = 0; i < signature.params.size(); i++) {
+                infer_expression_type(expr->children[2 + i], ctx);
+            }
+            result = signature.results.size() > 0 ? signature.results[0] : InferredType::Void;
+        }
+    } else if (isListNode(expr, "call_indirect")) {
+        SignatureMap::iterator found = ctx.types.find(*(static_cast<LiteralNodePtr>(expr->children[1])->str));
+        if (found != ctx.types.end()) {
+            const Signature& signature = found->second;
+            infer_expression_type(expr->children[2], ctx);
+            for (size_t i = 0; i < signature.params.size(); i++) {
+                infer_expression_type(expr->children[3 + i], ctx);
+            }
+            result = signature.results.size() > 0 ? signature.results[0] : InferredType::Void;
+        }
+    } else if (isListNode(expr, "select")) {
+        result = infer_expression_type(expr->children[1], ctx);
+        infer_expression_type(expr->children[2], ctx);
+        infer_expression_type(expr->children[3], ctx);
+    } else if (isListNode(expr, "br")) {
+        if (expr->children.size() > 2) {
+            result = infer_expression_type(expr->children[2], ctx);
+        }
+        result = InferredType::Void;
+    } else if (isListNode(expr, "br_if")) {
+        infer_expression_type(expr->children[2], ctx);
+        if (expr->children.size() > 3) {
+            infer_expression_type(expr->children[3], ctx);
+        }
+        result = InferredType::Void;
+    } else if (isListNode(expr, "br_table")) {
+        size_t childrenCount = expr->children.size();
+        if (childrenCount > 3) {
+            size_t i = childrenCount > 4 && isListNode(expr->children[childrenCount - 2]) ?
+                childrenCount - 2 : childrenCount - 1;
+            infer_expression_type(expr->children[i], ctx);
+            if (i + 1 > childrenCount) {
+                infer_expression_type(expr->children[i + 1], ctx);
+            }
+        }
+        result = InferredType::Void;
+    } else if (isListNode(expr, "get_local")) {
+        std::map<std::string, InferredType>::iterator found =
+            ctx.locals.find(*(static_cast<LiteralNodePtr>(expr->children[1])->str));
+        if (found != ctx.locals.end())
+            result = found->second;
+    } else if (isListNode(expr, "eqz")) {
+        exprNameNode->inferredType = // override op name type
+            infer_expression_type(expr->children[1], ctx);
+        result = InferredType::I32;
+    } else if (isListNode(expr, "lt") || isListNode(expr, "lt_s") || isListNode(expr, "lt_u") ||
+               isListNode(expr, "le") || isListNode(expr, "le_s") || isListNode(expr, "le_u") ||
+               isListNode(expr, "gt") || isListNode(expr, "gt_s") || isListNode(expr, "gt_u") ||
+               isListNode(expr, "ge") || isListNode(expr, "ge_s") || isListNode(expr, "ge_u") ||
+               isListNode(expr, "eq") || isListNode(expr, "ne")) {
+        exprNameNode->inferredType = // override op name type
+            infer_expression_type(expr->children[1], ctx);
+        infer_expression_type(expr->children[2], ctx);
+        result = InferredType::I32;
+    } else {
+        result = exprNameNode->inferredType;
+        for (Nodes::iterator it = expr->children.begin() + 1; it != expr->children.end(); it++) {
+            if (!isListNode(*it))
+                continue;
+            InferredType exprResult = infer_expression_type(*it, ctx);
+            if (result == InferredType::Unknown) // using first known operand type
+                result = exprResult;
+        }
+    }
+    exprNameNode->inferTypeIfUnknown(result);
+    expr->inferTypeIfUnknown(result);
+    return result;
+}
+
+void
+infer_types_bottom_up(ListNodePtr module)
+{
+    BottomUpInferTypeContext ctx;
+    SignatureMap& types = ctx.types;
+    for (Nodes::iterator p = module->children.begin(); p != module->children.end(); p++) {
+        if (isListNode(*p, "type")) {
+            ListNodePtr type = static_cast<ListNodePtr>(*p);
+            LiteralNodePtr typeName = static_cast<LiteralNodePtr>(type->children[1]);
+            Signature signature;
+            parse_signature(static_cast<ListNodePtr>(type->children[2]), signature);
+            types.insert(std::make_pair(*(typeName->str), signature));
+        }
+    }
+    SignatureMap& importTypes = ctx.importTypes;
+    SignatureMap& functionTypes = ctx.functionTypes;
+    for (Nodes::iterator p = module->children.begin(); p != module->children.end(); p++) {
+        if (isListNode(*p, "import")) {
+            ListNodePtr import = static_cast<ListNodePtr>(*p);
+            LiteralNodePtr importName = static_cast<LiteralNodePtr>(import->children[1]);
+            NodePtr type = import->children[4];
+            if (isLiteralNode(type)) {
+                SignatureMap::iterator found = types.find(*(static_cast<LiteralNodePtr>(type)->str));
+                if (found != types.end())
+                    importTypes.insert(std::make_pair(*(importName->str), found->second));
+            } else if (isListNode(type)) {
+                Signature signature;
+                parse_signature(static_cast<ListNodePtr>(type), signature);
+                importTypes.insert(std::make_pair(*(importName->str), signature));
+            }
+        } else if (isListNode(*p, "func")) {
+            ListNodePtr func = static_cast<ListNodePtr>(*p);
+            const std::string& funcName = *(static_cast<LiteralNodePtr>(func->children[1])->str);
+            Signature signature;
+            for (Nodes::iterator it = func->children.begin() + 1; it != func->children.end(); it++) {
+                if (isListNode(*it, "param")) {
+                    ListNodePtr param = static_cast<ListNodePtr>(*it);
+                    InferredType type = parse_inferred_type(
+                        static_cast<LiteralNodePtr>(param->children[2])->str->c_str());
+                    signature.params.push_back(type);
+                } else if (isListNode(*it, "result")) {
+                    ListNodePtr result = static_cast<ListNodePtr>(*it);
+                    InferredType type = parse_inferred_type(
+                        static_cast<LiteralNodePtr>(result->children[1])->str->c_str());
+                    signature.results.push_back(type);
+                }
+            }
+            functionTypes.insert(std::make_pair(funcName, signature));
+        }
+    }
+    for (Nodes::iterator p = module->children.begin(); p != module->children.end(); p++) {
+        if (isListNode(*p, "func")) {
+            ListNodePtr func = static_cast<ListNodePtr>(*p);
+            ctx.locals.clear();
+            Nodes::iterator it = func->children.begin() + 1;
+            for (; it != func->children.end(); it++) {
+                if (isListNode(*it, "param")) {
+                    ListNodePtr param = static_cast<ListNodePtr>(*it);
+                    InferredType type = parse_inferred_type(
+                        static_cast<LiteralNodePtr>(param->children[2])->str->c_str());
+                    ctx.locals.insert(std::make_pair(*(static_cast<LiteralNodePtr>(param->children[1])->str), type));
+                } else if (isListNode(*it, "local")) {
+                    ListNodePtr local = static_cast<ListNodePtr>(*it);
+                    InferredType type = parse_inferred_type(
+                        static_cast<LiteralNodePtr>(local->children[2])->str->c_str());
+                    ctx.locals.insert(std::make_pair(*(static_cast<LiteralNodePtr>(local->children[1])->str), type));
+                } else if (isListNode(*it, "result")) {
+                    // nop
+                } else if (isListNode(*it)){
+                    infer_expression_type(static_cast<ListNodePtr>(*it), ctx);
+                }
+            }
+        }
+    }
+}
+
 void
 TI::infer_types(NodePtr node)
 {
     if (!isListNode(node, "module"))
         return;
-    infer_types_top_down(static_cast<ListNodePtr>(node));
+    infer_types_bottom_up(static_cast<ListNodePtr>(node));
 }
