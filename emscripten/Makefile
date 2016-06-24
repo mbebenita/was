@@ -2,8 +2,7 @@ CXX = emcc
 CXXINCLUDE ?= -I /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/
 CXXFLAGS = -Wno-deprecated-register -std=c++11 -O2
 
-SOURCES = ../was_driver.cpp \
-          ../was_parser.tab.cc \
+SOURCES = ../was_parser.tab.cc \
           ../was_lexer.yy.cc \
           ../main.cpp \
           ../ast.cpp \

@@ -20,14 +20,27 @@
 #include <string>
 #include <vector>
 
-#include "was_driver.hpp"
+#include "was_scanner.hpp"
 #include "ti.hpp"
+
+AST::NodePtr parse(const char *const filename, int debug_level) {
+  std::ifstream in_file(filename);
+  if (!in_file.good())
+    exit(EXIT_FAILURE);
+  WAS::WAS_Scanner scanner(&in_file);
+  AST::NodePtr result;
+  WAS::WAS_Parser parser(scanner, &result);
+  parser.set_debug_level(debug_level);
+  const int success(0);
+  if (parser.parse() != success)
+      return nullptr;
+  return result;
+}
 
 int main(const int argc, const char **argv) {
   if (argc < 2)
     return EXIT_FAILURE;
 
-  WAS::WAS_Driver driver;
   int debug_level = 0;
   int print = 0;
   int inferTypes = 0;
@@ -56,14 +69,16 @@ int main(const int argc, const char **argv) {
     output = new std::ofstream(outputFilename);
 
   for (std::string &source : sources) {
-    driver.result = nullptr;
-    driver.parse(source.c_str(), debug_level);
+    AST::NodePtr ast = parse(source.c_str(), debug_level);
+    if (!ast) {
+      std::cerr << "Parse failed!!\n";
+      return EXIT_FAILURE;
+    }
 
-    AST::NodePtr ast = driver.result;
     if (inferTypes)
       TI::infer_types(ast, inferTypes == 2);
     if (print) {
-      driver.result->print(*output);
+      ast->print(*output);
       (*output) << std::endl;
     }
     delete ast;

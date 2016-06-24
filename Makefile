@@ -16,7 +16,7 @@ CFLAGS = -Wno-deprecated-register -O0  $(CDEBUG) $(CSTD)
 CXXFLAGS = -Wno-deprecated-register -O0  $(CXXDEBUG) $(CXXSTD)
 
 
-CPPOBJ = main was_driver ast ti
+CPPOBJ = main ast ti
 SOBJ =  parser lexer
 
 FILES = $(addsuffix .cpp, $(CPPOBJ))

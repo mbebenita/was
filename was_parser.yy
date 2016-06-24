@@ -19,24 +19,22 @@
 %debug 
 
 %defines 
-%define api.namespace {WAS}
-%define parser_class_name {WAS_Parser}
+%define api.namespace { WAS }
+%define parser_class_name { WAS_Parser }
 
 %code requires{
    #include "ast.hpp"
 
    namespace WAS {
-      class WAS_Driver;
       class WAS_Scanner;
    }
 }
 
-%parse-param { WAS_Scanner  &scanner  }
-%parse-param { WAS_Driver  &driver  }
+%parse-param { WAS_Scanner& scanner  }
+%parse-param { AST::NodePtr* result  }
 
 %code{
-   /* include for all driver functions */
-   #include "was_driver.hpp"
+   #include "was_scanner.hpp"
 
 #undef yylex
 #define yylex scanner.yylex2
@@ -201,8 +199,8 @@
 %%
 
 module
-   : /* Empty */          { $$ = AST::NodeFactory::createListNode("module"); driver.result = $$; }
-   | module_item_sequence { AST::ListNode* module = AST::NodeFactory::createListNode("module"); module->move($1); $$ = module; driver.result = module; }
+   : /* Empty */          { $$ = AST::NodeFactory::createListNode("module"); *result = $$; }
+   | module_item_sequence { AST::ListNode* module = AST::NodeFactory::createListNode("module"); module->move($1); $$ = module; *result = module; }
    ;
 
 module_item_sequence

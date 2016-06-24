@@ -15,13 +15,10 @@
  */
 
 %{
-/* C++ string header, for string ops below */
-#include <string>
-
 /* Implementation of yyFlexScanner */ 
 #include "was_scanner.hpp"
 #undef  YY_DECL
-#define YY_DECL int WAS::WAS_Scanner::yylex2(WAS::WAS_Parser::semantic_type * const lval, WAS::WAS_Parser::location_type *location)
+#define YY_DECL int WAS::WAS_Scanner::yylex2(WAS::WAS_Parser::semantic_type* const lval, WAS::WAS_Parser::location_type* location)
 
 /* typedef to make the returns for the tokens shorter */
 typedef WAS::WAS_Parser::token token;
