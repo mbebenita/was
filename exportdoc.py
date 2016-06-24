@@ -29,7 +29,8 @@ def read_l():
   with open('was_lexer.l', 'r') as f:
     read_data = f.read()
   remove_c_code = re.compile(r"%\{((?!%\})[\s\S])*%\}", re.M);
-  no_code = re.sub(remove_c_code, "", read_data);
+  remove_c_header = re.compile(r"/\*((?!\*/)[\s\S])*\*/\s*", re.M);
+  no_code = re.sub(remove_c_code, "", re.sub(remove_c_header, "", read_data));
   remove_options = re.compile(r"^%\w[^\n]*\n", re.M);
   no_options = re.sub(remove_options, "", no_code);
   lexer_content = re.compile(r"\n*([\s\S]*)%%\n([\s\S]*)%%", re.M);
