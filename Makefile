@@ -50,7 +50,12 @@ lexer: was_lexer.l
 test:
 	cd test && ./check.py
 
+.PHONY: was.js
+was.js: parser lexer
+	$(MAKE) -C emscripten
+
 .PHONY: clean
 clean:
 	rm -rf $(CLEANLIST)
+	$(MAKE) -C emscripten clean
 
