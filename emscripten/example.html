@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"></meta>
+  <script src="was.js"></script>
+</head>  
+<body>
+  WAS:
+  <textarea id="was">function $inc ($a: i32) : (i32) {
+  $a + 1
+}</textarea>
+  WAST:
+  <textarea id="wast"></textarea>
+  
+  <script>
+    function convert() {
+      var source = document.getElementById('was').value;
+      var result = wasCLI.runWAS(source);
+      document.getElementById('wast').value = result; 
+    }
+    convert();
+  </script>
+</body></html>
