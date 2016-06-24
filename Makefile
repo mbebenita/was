@@ -25,9 +25,9 @@ OBJS  = $(addsuffix .o, $(CPPOBJ))
 
 CLEANLIST =  $(addsuffix .o, $(OBJ)) $(OBJS) \
 				 was_parser.tab.cc was_parser.tab.hh \
-				 location.hh position.hh \
-			    stack.hh was_parser.output parser.o \
-				 lexer.o was_lexer.yy.cc $(EXE)\
+				 location.hh position.hh stack.hh \
+				 was_parser.output parser.o was_parser.tab.o \
+				 lexer.o was_lexer.yy.o was_lexer.yy.cc $(EXE)\
 
 .PHONY: all
 all: was test
