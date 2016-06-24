@@ -358,7 +358,7 @@ infer_expression_type(NodePtr item, BottomUpInferTypeContext& ctx)
     } else if (isListNode(expr, "if")) {
         infer_expression_type(expr->children[1], ctx);
         infer_expression_type(expr->children[2], ctx);
-        if (expr->children.size() > 2)
+        if (expr->children.size() > 3)
             result = infer_expression_type(expr->children[3], ctx);
         else
             result = InferredType::Void;
