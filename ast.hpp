@@ -77,6 +77,7 @@ namespace AST {
     class NodeFactory {
       public:
         static LiteralNodePtr createLiteralNode(LiteralType type_, StringPtr str_);
+        static LiteralNodePtr createLiteralNode(LiteralType type_, LiteralName str_);
         static LiteralNodePtr createLiteralNode(LiteralName keyword);
         static ListNodePtr createListNode();
         static ListNodePtr createListNode(LiteralName keyword);

@@ -30,18 +30,25 @@ NodeFactory::createLiteralNode(LiteralType type_, StringPtr str_)
 }
 
 LiteralNodePtr
+NodeFactory::createLiteralNode(LiteralType type_, LiteralName name)
+{
+    return createLiteralNode(type_, new std::string(name));
+}
+
+LiteralNodePtr
+NodeFactory::createLiteralNode(LiteralName keyword)
+{
+    return createLiteralNode(LiteralType::Keyword, keyword);
+}
+
+
+LiteralNodePtr
 NodeFactory::createFlag(LiteralName prefix, LiteralNodePtr node)
 {
     std::string s(prefix);
     s.insert(s.size(), *(node->str));
     delete node;
     return new LiteralNode(LiteralType::Flag, new std::string(s));
-}
-
-LiteralNodePtr
-NodeFactory::createLiteralNode(LiteralName keyword)
-{
-    return new LiteralNode(LiteralType::Keyword, new std::string(keyword));
 }
 
 ListNodePtr

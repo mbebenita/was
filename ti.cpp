@@ -81,7 +81,7 @@ parse_signature(ListNodePtr node, Signature& signature)
             ListNodePtr result = static_cast<ListNodePtr>(*it);
             for (Nodes::iterator it2 = result->children.begin() + 1; it2 != result->children.end(); it2++) {
                 InferredType type = parse_inferred_type(static_cast<LiteralNodePtr>(*it2)->str->c_str());
-                signature.params.push_back(type);
+                signature.results.push_back(type);
             }
         }
     }
@@ -362,7 +362,7 @@ infer_expression_type(NodePtr item, BottomUpInferTypeContext& ctx)
     LiteralNodePtr exprNameNode = static_cast<LiteralNodePtr>(expr->children[0]);
 
     if (isListNode(expr, "block") || isListNode(expr, "loop") ||
-               isListNode(expr, "then") || isListNode(expr, "else")) {
+        isListNode(expr, "then") || isListNode(expr, "else")) {
         Nodes::iterator it = expr->children.begin() + 1;
         result = InferredType::Void;
         for (; it != expr->children.end(); it++) {
@@ -489,14 +489,14 @@ infer_types_bottom_up(ListNodePtr module)
         if (isListNode(*p, "import")) {
             ListNodePtr import = static_cast<ListNodePtr>(*p);
             LiteralNodePtr importName = static_cast<LiteralNodePtr>(import->children[1]);
-            NodePtr type = import->children[4];
-            if (isLiteralNode(type)) {
-                SignatureMap::iterator found = types.find(*(static_cast<LiteralNodePtr>(type)->str));
+            if (import->children.size() > 4 && isListNode(import->children[4], "type")) {
+                ListNodePtr type = static_cast<ListNodePtr>(import->children[4]);
+                SignatureMap::iterator found = types.find(*(static_cast<LiteralNodePtr>(type->children[1])->str));
                 if (found != types.end())
                     importTypes.insert(std::make_pair(*(importName->str), found->second));
-            } else if (isListNode(type)) {
+            } else {
                 Signature signature;
-                parse_signature(static_cast<ListNodePtr>(type), signature);
+                parse_signature(import, signature);
                 importTypes.insert(std::make_pair(*(importName->str), signature));
             }
         } else if (isListNode(*p, "func")) {

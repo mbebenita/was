@@ -218,16 +218,18 @@ module_item
 
 import_declaration
    : IMPORT TEXT AS IDENTIFIER FROM TEXT TYPEOF IDENTIFIER ';'
-    { AST::ListNodePtr import = AST::NodeFactory::createListNode("import", $4, $2, $6); import->append($8); $$ = import; }
+    { AST::ListNodePtr import = AST::NodeFactory::createListNode("import", $4, $6, $2);
+      import->append(AST::NodeFactory::createListNode("type", $8)); $$ = import; }
    | IMPORT TEXT AS IDENTIFIER FROM TEXT TYPEOF function_signature ';'
-    { AST::ListNodePtr import = AST::NodeFactory::createListNode("import", $4, $2, $6); import->move($8); $$ = import; }
+    { AST::ListNodePtr import = AST::NodeFactory::createListNode("import", $4, $6, $2);
+      import->move($8); $$ = import; }
    ;
 
 export_declaration
    : EXPORT MEMORY AS TEXT ';'
-     { $$ = AST::NodeFactory::createListNode("export", $4, AST::NodeFactory::createListNode("memory")); }
+     { $$ = AST::NodeFactory::createListNode("export", $4, AST::NodeFactory::createLiteralNode("memory")); }
    | EXPORT IDENTIFIER AS TEXT ';'
-     { $$ = AST::NodeFactory::createListNode("export", $4, $2); }
+     { $$ = AST::NodeFactory::createListNode("export", $2, $4); }
    ;
 
 type_declaration
@@ -312,7 +314,8 @@ block
    |           LOOP  '{' optional_multi_block_content '}'
      { AST::ListNodePtr loop = $3.toBlockNode("loop"); $$ = loop; }
    | LOOP IDENTIFIER '{' optional_multi_block_content '}'
-     { AST::ListNodePtr loop = $4.toBlockNode("loop"); loop->insertAt($2, 1); $$ = loop; }
+     { if (!$4.label) $4.label = AST::NodeFactory::createLiteralNode(AST::LiteralType::Identifier, "$exit");
+       AST::ListNodePtr loop = $4.toBlockNode("loop"); loop->insertAt($2, 2); $$ = loop; }
    ;
 
 label
@@ -622,11 +625,11 @@ br_expression
    : BR IDENTIFIER
      { AST::ListNodePtr node = AST::NodeFactory::createListNode("br"); node->append($2); $$ = node; }
    | BR '(' expression ')' IDENTIFIER
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br"); node->append($5); node->append($3); $$ = node; }
+     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br"); node->append($3); node->append($5); $$ = node; }
    | BR_IF '(' expression ')' IDENTIFIER
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br_if"); node->append($5); node->append($3); $$ = node; }
+     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br_if"); node->append($3); node->append($5); $$ = node; }
    | BR_IF '(' expression ',' expression ')' IDENTIFIER
-     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br_if"); node->append($7); node->append($3); node->append($5); $$ = node; }
+     { AST::ListNodePtr node = AST::NodeFactory::createListNode("br_if"); node->append($5); node->append($3); node->append($7); $$ = node; }
    ; 
 
 br_table_expression
