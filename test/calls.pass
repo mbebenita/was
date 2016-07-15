@@ -1,13 +1,13 @@
 function $foo() : () {
 	// Call Expressions
-	call $foo ();
-	call $foo () + 1;
-	call $foo () + call $foo ();
-	call $foo ($foo);
-	call $foo ($foo) + call $foo ($foo);
-	call $foo ($foo, $bar);
-	call $foo ($foo, $bar) + call $foo ($foo, $bar);
-	call $foo ($foo, call $foo ($foo));
+	$foo ();
+	$foo () + 1;
+	$foo () + $foo ();
+	$foo ($foo);
+	$foo ($foo) + $foo ($foo);
+	$foo ($foo, $bar);
+	$foo ($foo, $bar) + $foo ($foo, $bar);
+	$foo ($foo, $foo ($foo));
 
 	// Call Import Expressions
 	call_import $foo ();
@@ -30,5 +30,5 @@ function $foo() : () {
 	call_indirect $foo [1] ($foo, call_indirect $foo [1] ($foo));
 
 	// Mix
-	call_indirect $foo [call $foo ()] ($foo, call_indirect $foo [call_import $foo ()] ($foo))
+	call_indirect $foo [$foo()] ($foo, call_indirect $foo [call_import $foo ()] ($foo))
 }

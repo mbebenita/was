@@ -3,7 +3,7 @@ function $foo() : () {
 	return;
 	if (return) { };
 	if (return) { } else { };
-	call $foo(); call $foo(1, 2);
+	$foo(); $foo(1, 2);
 	call_import $bar(3, 4);
 	if (if (1) { 2 }) { 3 }; 
 	if (1) { 2 };

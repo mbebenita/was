@@ -98,7 +98,6 @@ BOOKMARK        \@{ATOM}
 "br_table"                     { return token::BR_TABLE; }
 "if"                           { return token::IF; }
 "else"                         { return token::ELSE; }
-"call"                         { return token::CALL; }
 "call_import"                  { return token::CALL_IMPORT; }
 "call_indirect"                { return token::CALL_INDIRECT; }
 

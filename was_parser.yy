@@ -111,7 +111,6 @@
 %token LOOP
 %token IF
 %token ELSE
-%token CALL
 %token CALL_IMPORT
 %token CALL_INDIRECT
 %token NOP
@@ -599,8 +598,8 @@ expression
    ;
 
 call_expression
-   : CALL IDENTIFIER '(' optional_expression_list ')'
-     { AST::ListNodePtr call = AST::NodeFactory::createListNode("call", $2); call->move($4); $$ = call; }
+   : IDENTIFIER '(' optional_expression_list ')'
+     { AST::ListNodePtr call = AST::NodeFactory::createListNode("call", $1); call->move($3); $$ = call; }
    | CALL_IMPORT IDENTIFIER '(' optional_expression_list ')'
      { AST::ListNodePtr call = AST::NodeFactory::createListNode("call_import", $2); call->move($4); $$ = call; }
    | CALL_INDIRECT IDENTIFIER '[' expression ']' '(' optional_expression_list ')'
